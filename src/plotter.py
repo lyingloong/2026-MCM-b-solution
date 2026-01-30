@@ -183,21 +183,30 @@ def plot_ratio_analysis():
     # Convert cost to billions of dollars
     costs_billion = [c / 1e9 for c in costs]
     
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    fig, ax1 = plt.subplots(figsize=(12, 6))
     
-    # Cost variation with ratio
-    ax1.plot(ratio_percent, costs_billion, 'o-', color='blue')
-    ax1.set_title('Cost Variation with Space Elevator Ratio')
+    # Cost variation with ratio (left y-axis)
+    color = 'tab:blue'
     ax1.set_xlabel('Space Elevator Ratio (%)')
-    ax1.set_ylabel('Total Cost (Billion USD)')
-    ax1.grid(True)
+    ax1.set_ylabel('Total Cost (Billion USD)', color=color)
+    ax1.plot(ratio_percent, costs_billion, 'o-', color=color, label='Total Cost')
+    ax1.tick_params(axis='y', labelcolor=color)
+    ax1.grid(True, alpha=0.3)
     
-    # Time variation with ratio
-    ax2.plot(ratio_percent, years, 'o-', color='green')
-    ax2.set_title('Time Variation with Space Elevator Ratio')
-    ax2.set_xlabel('Space Elevator Ratio (%)')
-    ax2.set_ylabel('Time Required (Years)')
-    ax2.grid(True)
+    # Time variation with ratio (right y-axis)
+    ax2 = ax1.twinx()
+    color = 'tab:green'
+    ax2.set_ylabel('Time Required (Years)', color=color)
+    ax2.plot(ratio_percent, years, 's-', color=color, label='Time Required')
+    ax2.tick_params(axis='y', labelcolor=color)
+    
+    # Title and legend
+    plt.title('Cost and Time Variation with Space Elevator Ratio')
+    
+    # Combine legends
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper center')
     
     plt.tight_layout()
     results_dir = get_results_dir()

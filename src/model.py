@@ -18,7 +18,7 @@ ROCKET_PAYLOAD_MAX = 150  # 火箭最大有效载荷（吨）
 ROCKET_PAYLOAD_AVG = (ROCKET_PAYLOAD_MIN + ROCKET_PAYLOAD_MAX) / 2  # 平均有效载荷
 ROCKET_COST_PER_LAUNCH = 10_000_000  # 每次发射成本（美元）
 ROCKET_RELIABILITY = 0.95  # 可靠性（无故障概率）
-ROCKET_LAUNCHES_PER_YEAR_PER_SITE = 50  # 每个发射场每年发射次数
+ROCKET_LAUNCHES_PER_YEAR_PER_SITE = 2000  # 每个发射场每年发射次数
 
 # 计算每个场景的成本和时间线
 def calculate_scenario_1():
@@ -57,8 +57,8 @@ def calculate_scenario_3():
     best_scenario = None
     min_total_cost = float('inf')
     
-    # 遍历不同的太空电梯比例（从0%到100%，步长5%）
-    for elevator_ratio in range(0, 101, 5):
+    # 遍历不同的太空电梯比例（从0%到100%，步长2%）
+    for elevator_ratio in range(0, 101, 2):
         elevator_ratio = elevator_ratio / 100
         rocket_ratio = 1 - elevator_ratio
         
@@ -202,8 +202,8 @@ def save_results_to_file():
     ratio_file = os.path.join(results_dir, 'ratio_analysis.txt')
     with open(ratio_file, 'w') as f:
         f.write("=== 组合场景比例分析 ===\n")
-        # 遍历不同的太空电梯比例（从0%到100%，步长5%）
-        for elevator_ratio in range(0, 101, 5):
+        # 遍历不同的太空电梯比例（从0%到100%，步长2%）
+        for elevator_ratio in range(0, 101, 2):
             elevator_ratio = elevator_ratio / 100
             rocket_ratio = 1 - elevator_ratio
             
