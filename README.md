@@ -9,7 +9,9 @@
 This repository contains the solution for the 2026 MCM Problem B, which focuses on creating a moon colony using a space elevator system. The analysis includes three scenarios: using only space elevators, using only traditional rockets, and a combined approach with optimal ratio.
 
 ## Repository Structure
-- `data/`: Contains any data files used in the analysis
+- `data/`: Contains data files used in the analysis
+  - `Global_Space_Exploration_Dataset.csv`: Original dataset from Kaggle (https://www.kaggle.com/datasets/atharvasoundankar/global-space-exploration-dataset-2000-2025)
+  - `space_launch_data_2000_2025.csv`: Processed data based on the original dataset
 - `models/`: Contains models and algorithms implementation
 - `results/`: Contains output results and visualizations
 - `src/`: Main source code
