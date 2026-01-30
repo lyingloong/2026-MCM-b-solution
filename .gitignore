@@ -14,29 +14,3 @@ env/
 *.swp
 *.swo
 *~
-
-# OS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Data
-*.csv
-*.xlsx
-*.json
-*.pickle
-*.pkl
-
-# Results
-*.png
-*.jpg
-*.jpeg
-*.pdf
-*.txt
-
-# Logs
-*.log
