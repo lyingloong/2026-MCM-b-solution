@@ -17,7 +17,7 @@ TUG_DELTA_V = 2800 # m/s
 TUG_I_SP = 380 #发动机比冲（秒）
 TUG_RELIABILITY = 0.99 # 可靠性（无故障概率）
 TUG_COST_FUEL_PER = 2 # 燃料价格（美元/千克）
-TUG_COST_VEHICLE = 200_000_000 # 在轨火箭成本
+TUG_COST_VEHICLE = 20_000_000 # 在轨火箭成本
 TUG_N = 50 # 复用次数
 
 # 太空电梯-摆渡火箭单位有效载荷成本
@@ -37,6 +37,8 @@ ROCKET_COST_PER_LAUNCH = 10_000_000  # 单次发射成本（美元）
 ROCKET_THETA = 0.4 # 可回收火箭消耗系数
 ROCKET_RELIABILITY = 0.95  # 可靠性（无故障概率）
 ROCKET_LAUNCHES_PER_YEAR_PER_SITE = 2000  # 每个发射场每年发射次数
+ROCKET_N_G = 20 # 复用次数
+COST_ROCKET_PER = ROCKET_THETA * ROCKET_COST_PER_LAUNCH / (ROCKET_N_G * ROCKET_RELIABILITY)
 
 # 计算每个场景的成本和时间线
 def calculate_scenario_1():
@@ -151,7 +153,7 @@ def calculate_reliability_impact():
             elevator_annual_capacity = GALACTIC_HARBORS * ELEVATOR_ANNUAL_CAPACITY
             effective_elevator_capacity = elevator_annual_capacity * ELEVATOR_RELIABILITY
             elevator_years = np.ceil(elevator_material / effective_elevator_capacity)
-            elevator_cost = elevator_material * ELEVATOR_COST_PER_TON / ELEVATOR_RELIABILITY
+            elevator_cost = elevator_material * COST_ELEVATOR_PER
             
             # 火箭部分
             rocket_material = TOTAL_MATERIAL * rocket_ratio
@@ -233,7 +235,7 @@ def save_results_to_file():
             if elevator_ratio > 0:
                 elevator_annual_capacity = GALACTIC_HARBORS * ELEVATOR_ANNUAL_CAPACITY
                 elevator_years = -(-elevator_material // elevator_annual_capacity)  # 向上取整
-                elevator_cost = elevator_material * ELEVATOR_COST_PER_TON
+                elevator_cost = elevator_material * COST_ELEVATOR_PER
             else:
                 elevator_years = 0
                 elevator_cost = 0
