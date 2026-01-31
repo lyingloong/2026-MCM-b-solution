@@ -4,15 +4,32 @@ import numpy as np
 import os
 
 # 获取结果目录的绝对路径
-def get_results_dir():
-    """获取结果目录的绝对路径"""
-    return os.path.join(os.path.dirname(os.path.dirname(__file__)), 'results')
+def get_results_dir(problem=None):
+    """获取结果目录的绝对路径
+    
+    Args:
+        problem (int, optional): 问题编号，1表示Problem 1，2表示Problem 2。如果为None，返回根results目录
+        
+    Returns:
+        str: 结果目录的绝对路径
+    """
+    base_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'results')
+    if problem is not None:
+        return os.path.join(base_dir, f'problem_{problem}')
+    return base_dir
 
 # 读取场景分析结果
-def read_scenario_analysis():
-    """读取场景分析结果"""
+def read_scenario_analysis(problem=2):
+    """读取场景分析结果
+    
+    Args:
+        problem (int, optional): 问题编号，1表示Problem 1，2表示Problem 2。默认为2
+        
+    Returns:
+        list: 场景分析结果列表
+    """
     scenarios = []
-    results_dir = get_results_dir()
+    results_dir = get_results_dir(problem)
     scenario_file = os.path.join(results_dir, 'scenario_analysis.txt')
     
     with open(scenario_file, 'r') as f:
@@ -40,10 +57,17 @@ def read_scenario_analysis():
     return scenarios
 
 # 读取系统故障影响结果
-def read_reliability_impact():
-    """读取系统故障影响结果"""
+def read_reliability_impact(problem=2):
+    """读取系统故障影响结果
+    
+    Args:
+        problem (int, optional): 问题编号，1表示Problem 1，2表示Problem 2。默认为2
+        
+    Returns:
+        list: 系统故障影响结果列表
+    """
     scenarios = []
-    results_dir = get_results_dir()
+    results_dir = get_results_dir(problem)
     reliability_file = os.path.join(results_dir, 'reliability_impact.txt')
     
     with open(reliability_file, 'r') as f:
@@ -67,12 +91,19 @@ def read_reliability_impact():
     return scenarios
 
 # 读取比例分析结果
-def read_ratio_analysis():
-    """读取组合场景比例分析结果"""
+def read_ratio_analysis(problem=2):
+    """读取组合场景比例分析结果
+    
+    Args:
+        problem (int, optional): 问题编号，1表示Problem 1，2表示Problem 2。默认为2
+        
+    Returns:
+        tuple: 包含比例、时间和成本的元组
+    """
     ratios = []
     years = []
     costs = []
-    results_dir = get_results_dir()
+    results_dir = get_results_dir(problem)
     ratio_file = os.path.join(results_dir, 'ratio_analysis.txt')
     
     with open(ratio_file, 'r') as f:
@@ -100,9 +131,13 @@ def read_ratio_analysis():
     return ratios, years, costs
 
 # 绘制场景对比图
-def plot_scenario_comparison():
-    """Plot cost and time comparison for all scenarios"""
-    scenarios = read_scenario_analysis()
+def plot_scenario_comparison(problem=2):
+    """Plot cost and time comparison for all scenarios
+    
+    Args:
+        problem (int, optional): 问题编号，1表示Problem 1，2表示Problem 2。默认为2
+    """
+    scenarios = read_scenario_analysis(problem)
     
     names = [scenario['name'] for scenario in scenarios]
     costs = [scenario['cost'] / 1e9 for scenario in scenarios]  # Convert to billions of dollars
@@ -123,16 +158,20 @@ def plot_scenario_comparison():
     ax2.tick_params(axis='x', rotation=45)
     
     plt.tight_layout()
-    results_dir = get_results_dir()
+    results_dir = get_results_dir(problem)
     output_file = os.path.join(results_dir, 'scenario_comparison.png')
     plt.savefig(output_file)
     print(f'Scenario comparison chart saved to {output_file}')
 
 # 绘制系统故障影响对比图
-def plot_reliability_impact():
-    """Plot impact of system failures on each scenario"""
-    normal_scenarios = read_scenario_analysis()
-    impacted_scenarios = read_reliability_impact()
+def plot_reliability_impact(problem=2):
+    """Plot impact of system failures on each scenario
+    
+    Args:
+        problem (int, optional): 问题编号，1表示Problem 1，2表示Problem 2。默认为2
+    """
+    normal_scenarios = read_scenario_analysis(problem)
+    impacted_scenarios = read_reliability_impact(problem)
     
     # Create mapping for easy comparison
     normal_map = {scenario['name']: scenario for scenario in normal_scenarios}
@@ -168,15 +207,19 @@ def plot_reliability_impact():
     ax2.legend()
     
     plt.tight_layout()
-    results_dir = get_results_dir()
+    results_dir = get_results_dir(problem)
     output_file = os.path.join(results_dir, 'reliability_impact.png')
     plt.savefig(output_file)
     print(f'System failure impact chart saved to {output_file}')
 
 # 绘制组合场景比例分析图
-def plot_ratio_analysis():
-    """Plot cost and time variation with different ratios in combined scenario"""
-    ratios, years, costs = read_ratio_analysis()
+def plot_ratio_analysis(problem=2):
+    """Plot cost and time variation with different ratios in combined scenario
+    
+    Args:
+        problem (int, optional): 问题编号，1表示Problem 1，2表示Problem 2。默认为2
+    """
+    ratios, years, costs = read_ratio_analysis(problem)
     
     # Convert to percentage
     ratio_percent = [r * 100 for r in ratios]
@@ -209,17 +252,25 @@ def plot_ratio_analysis():
     ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper center')
     
     plt.tight_layout()
-    results_dir = get_results_dir()
+    results_dir = get_results_dir(problem)
     output_file = os.path.join(results_dir, 'ratio_analysis.png')
     plt.savefig(output_file)
     print(f'Ratio analysis chart saved to {output_file}')
 
 # Main function
 def main():
-    """Run all plotting functions"""
-    plot_scenario_comparison()
-    plot_reliability_impact()
-    plot_ratio_analysis()
+    """Run all plotting functions for both problems"""
+    # 运行 Problem 1（100%可靠性）的绘图
+    print("=== Problem 1: 100%可靠性 ===")
+    plot_scenario_comparison(1)
+    plot_reliability_impact(1)
+    plot_ratio_analysis(1)
+    
+    # 运行 Problem 2（当前可靠性）的绘图
+    print("\n=== Problem 2: 当前可靠性 ===")
+    plot_scenario_comparison(2)
+    plot_reliability_impact(2)
+    plot_ratio_analysis(2)
 
 if __name__ == "__main__":
     main()

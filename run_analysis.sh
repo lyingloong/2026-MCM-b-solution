@@ -2,11 +2,11 @@
 
 # 运行模型分析
 echo "Running model analysis..."
-python src/model.py
+python -m src.model
 
 # 生成图表
 echo "Generating charts..."
-python src/plotter.py
+python -m src.plotter
 
 echo "Analysis completed successfully!"
 echo "Results are available in the 'results' directory."
