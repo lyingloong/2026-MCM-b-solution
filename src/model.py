@@ -47,7 +47,7 @@ def calculate_scenario_2():
     total_annual_capacity = ROCKET_LAUNCH_SITES * ROCKET_LAUNCHES_PER_YEAR_PER_SITE * ROCKET_PAYLOAD_AVG
     years_needed = np.ceil(TOTAL_MATERIAL / total_annual_capacity)
     total_launches = np.ceil(TOTAL_MATERIAL / ROCKET_PAYLOAD_AVG)
-    total_cost = total_launches * ROCKET_COST_PER_LAUNCH
+    total_cost = total_launches * ROCKET_THETA * ROCKET_COST_PER_LAUNCH
     completion_year = START_YEAR + years_needed
     
     return {
