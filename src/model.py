@@ -11,12 +11,18 @@ ELEVATOR_ANNUAL_CAPACITY = 179_000  # 每个银河港年运输能力（吨）
 ELEVATOR_COST_PER_TON = 1000  # 每吨运输成本（美元）
 ELEVATOR_RELIABILITY = 0.99  # 可靠性（无故障概率）
 
+#摆渡火箭参数
+TUG_DELTA_V = 2800 # m/s
+TUG_I_SP = 380 #发动机比冲（秒）
+TUG_RELIABILITY = 0.99 # 可靠性（无故障概率）
+
 # 火箭系统参数
 ROCKET_LAUNCH_SITES = 10  # 火箭发射场数量
 ROCKET_PAYLOAD_MIN = 100  # 火箭最小有效载荷（吨）
 ROCKET_PAYLOAD_MAX = 150  # 火箭最大有效载荷（吨）
 ROCKET_PAYLOAD_AVG = (ROCKET_PAYLOAD_MIN + ROCKET_PAYLOAD_MAX) / 2  # 平均有效载荷
-ROCKET_COST_PER_LAUNCH = 10_000_000  # 每次发射成本（美元）
+ROCKET_COST_PER_LAUNCH = 10_000_000  # 单次发射成本（美元）
+ROCKET_THETA = 0.4 # 可回收火箭消耗系数
 ROCKET_RELIABILITY = 0.95  # 可靠性（无故障概率）
 ROCKET_LAUNCHES_PER_YEAR_PER_SITE = 2000  # 每个发射场每年发射次数
 
