@@ -86,7 +86,7 @@ def calculate_scenario_3():
             rocket_annual_capacity = ROCKET_LAUNCH_SITES * ROCKET_LAUNCHES_PER_YEAR_PER_SITE * ROCKET_PAYLOAD_AVG
             rocket_years = -(-rocket_material // rocket_annual_capacity)  # 向上取整
             rocket_launches = -(-rocket_material // ROCKET_PAYLOAD_AVG)  # 向上取整
-            rocket_cost = rocket_launches * ROCKET_COST_PER_LAUNCH
+            rocket_cost = rocket_launches * ROCKET_THETA * ROCKET_COST_PER_LAUNCH
         else:
             rocket_years = 0
             rocket_cost = 0
@@ -128,7 +128,7 @@ def calculate_reliability_impact():
             effective_capacity = scenario["annual_capacity"] * ROCKET_RELIABILITY
             years_needed = np.ceil(TOTAL_MATERIAL / effective_capacity)
             total_launches = np.ceil(TOTAL_MATERIAL / ROCKET_PAYLOAD_AVG / ROCKET_RELIABILITY)
-            total_cost = total_launches * ROCKET_COST_PER_LAUNCH
+            total_cost = total_launches * ROCKET_THETA * ROCKET_COST_PER_LAUNCH
         else:  # 组合场景
             # 获取最优比例
             elevator_ratio = scenario.get("elevator_ratio", 0.7)
@@ -147,7 +147,7 @@ def calculate_reliability_impact():
             effective_rocket_capacity = rocket_annual_capacity * ROCKET_RELIABILITY
             rocket_years = np.ceil(rocket_material / effective_rocket_capacity)
             rocket_launches = np.ceil(rocket_material / ROCKET_PAYLOAD_AVG / ROCKET_RELIABILITY)
-            rocket_cost = rocket_launches * ROCKET_COST_PER_LAUNCH
+            rocket_cost = rocket_launches * ROCKET_THETA * ROCKET_COST_PER_LAUNCH
             
             years_needed = max(elevator_years, rocket_years)
             total_cost = elevator_cost + rocket_cost
