@@ -88,7 +88,7 @@ def calculate_scenario_3():
         if elevator_ratio > 0:
             elevator_annual_capacity = GALACTIC_HARBORS * ELEVATOR_ANNUAL_CAPACITY
             elevator_years = -(-elevator_material // elevator_annual_capacity)  # 向上取整
-            elevator_cost = elevator_material * ELEVATOR_COST_PER_TON
+            elevator_cost = elevator_material * COST_ELEVATOR_PER
         else:
             elevator_years = 0
             elevator_cost = 0
@@ -134,7 +134,7 @@ def calculate_reliability_impact():
             # 考虑太空电梯可靠性
             effective_capacity = scenario["annual_capacity"] * ELEVATOR_RELIABILITY
             years_needed = np.ceil(TOTAL_MATERIAL / effective_capacity)
-            total_cost = TOTAL_MATERIAL * ELEVATOR_COST_PER_TON / ELEVATOR_RELIABILITY  # 考虑重试成本
+            total_cost = TOTAL_MATERIAL * COST_ELEVATOR_PER  # 考虑重试成本
         elif scenario["name"] == "Traditional Rockets Only":
             # 考虑火箭可靠性
             effective_capacity = scenario["annual_capacity"] * ROCKET_RELIABILITY
