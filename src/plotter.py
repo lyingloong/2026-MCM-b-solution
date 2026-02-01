@@ -161,24 +161,51 @@ def plot_scenario_comparison(problem=2):
     costs = [scenario['cost'] / 1e9 for scenario in scenarios]  # Convert to billions of dollars
     years = [scenario['years'] for scenario in scenarios]
     
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    # 使用更美观的颜色方案
+    colors = ['#1f77b4', '#2ca02c', '#9467bd']  # 蓝色、绿色、紫色
+    
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 7))
+    
+    # 设置整体字体大小
+    plt.rcParams.update({'font.size': 12})
     
     # Cost comparison
-    ax1.bar(names, costs, color=['blue', 'green', 'purple'])
-    ax1.set_title('Total Cost Comparison')
-    ax1.set_ylabel('Total Cost (Billion USD)')
-    ax1.tick_params(axis='x', rotation=45)
+    bars1 = ax1.bar(names, costs, color=colors, edgecolor='black', alpha=0.8)
+    ax1.set_title('Total Cost Comparison', fontsize=14, fontweight='bold')
+    ax1.set_ylabel('Total Cost (Billion USD)', fontsize=12)
+    ax1.tick_params(axis='x', rotation=45, labelsize=11)
+    ax1.tick_params(axis='y', labelsize=11)
+    ax1.grid(axis='y', alpha=0.3)
+    
+    # 添加成本数据标签
+    for bar in bars1:
+        height = bar.get_height()
+        ax1.text(bar.get_x() + bar.get_width()/2., height + 0.1,
+                f'{height:.2f}', ha='center', va='bottom', fontsize=10)
     
     # Time comparison
-    ax2.bar(names, years, color=['blue', 'green', 'purple'])
-    ax2.set_title('Time Required Comparison')
-    ax2.set_ylabel('Time Required (Years)')
-    ax2.tick_params(axis='x', rotation=45)
+    bars2 = ax2.bar(names, years, color=colors, edgecolor='black', alpha=0.8)
+    ax2.set_title('Time Required Comparison', fontsize=14, fontweight='bold')
+    ax2.set_ylabel('Time Required (Years)', fontsize=12)
+    ax2.tick_params(axis='x', rotation=45, labelsize=11)
+    ax2.tick_params(axis='y', labelsize=11)
+    ax2.grid(axis='y', alpha=0.3)
     
+    # 添加时间数据标签
+    for bar in bars2:
+        height = bar.get_height()
+        ax2.text(bar.get_x() + bar.get_width()/2., height + 0.5,
+                f'{height:.1f}', ha='center', va='bottom', fontsize=10)
+    
+    # 调整布局
     plt.tight_layout()
+    
+    # 添加整体标题
+    fig.suptitle(f'Scenario Comparison Analysis (Problem {problem})', fontsize=16, fontweight='bold', y=1.02)
+    
     results_dir = get_results_dir(problem)
     output_file = os.path.join(results_dir, 'scenario_comparison.png')
-    plt.savefig(output_file)
+    plt.savefig(output_file, bbox_inches='tight', dpi=150)
     print(f'Scenario comparison chart saved to {output_file}')
 
 

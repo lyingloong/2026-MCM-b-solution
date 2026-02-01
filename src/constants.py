@@ -8,7 +8,7 @@ START_YEAR = 2050  # 开始年份
 # 太空电梯系统参数
 GALACTIC_HARBORS = 3  # 银河港数量
 ELEVATOR_ANNUAL_CAPACITY = 179_000  # 每个银河港年运输能力（吨）
-ELEVATOR_COST_PER_TON = 1000  # 每吨运输成本（美元）
+ELEVATOR_COST_PER_TON = 34.68  # 每吨运输成本（美元）
 
 # 可靠性设置
 # Problem 1: 所有可靠性都是100%
@@ -54,7 +54,7 @@ ROCKET_PAYLOAD_MAX = 150  # 火箭最大有效载荷（吨）
 ROCKET_PAYLOAD_AVG = (ROCKET_PAYLOAD_MIN + ROCKET_PAYLOAD_MAX) / 2  # 平均有效载荷
 ROCKET_COST_PER_LAUNCH = 4_000_000_000  # 单次发射成本（美元）
 ROCKET_THETA = 0.4 # 可回收火箭消耗系数
-ROCKET_LAUNCHES_PER_YEAR_PER_SITE = 200  # 每个发射场每年发射次数
+ROCKET_LAUNCHES_PER_YEAR_PER_SITE = 1000  # 每个发射场每年发射次数
 ROCKET_N_G = 20 # 复用次数
 # 计算单位有效载荷成本：考虑发射成本、消耗系数、复用次数和可靠性
 # Problem 1 成本计算（100%可靠性）
