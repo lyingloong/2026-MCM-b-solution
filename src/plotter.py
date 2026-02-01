@@ -2,8 +2,10 @@
 plotter for main_model
 """
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import numpy as np
 from scipy.interpolate import interp1d
+from mpl_toolkits.mplot3d import Axes3D
 import os
 
 # 获取结果目录的绝对路径
@@ -567,6 +569,982 @@ def plot_reliability_statistics():
     plt.savefig(output_file, dpi=150, bbox_inches='tight')
     print(f'Reliability statistics chart saved to {output_file}')
 
+# 绘制3D可靠性影响分析图
+def plot_reliability_3d_analysis():
+    """Plot 3D analysis of reliability impact on cost and time
+    
+    目的：使用3D图表结合显示Problem 1和Problem 2的成本和时间差异
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 提高步长：从1%提高到10%
+    step_indices = list(range(0, len(ratios_p1), 10))
+    
+    # 转换为百分比和十亿美元
+    ratio_percent_p1 = [ratios_p1[i] * 100 for i in step_indices]
+    ratio_percent_p2 = [ratios_p2[i] * 100 for i in step_indices]
+    years_p1_sampled = [years_p1[i] for i in step_indices]
+    years_p2_sampled = [years_p2[i] for i in step_indices]
+    costs_billion_p1 = [costs_p1[i] / 1e9 for i in step_indices]
+    costs_billion_p2 = [costs_p2[i] / 1e9 for i in step_indices]
+    
+    # 创建3D图表
+    fig = plt.figure(figsize=(18, 12))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # 设置整体字体
+    plt.rcParams.update({'font.size': 12})
+    
+    # 柱形尺寸
+    bar_width = 3.0
+    bar_depth = 3.0
+    
+    # 绘制Problem 1的3D柱形图
+    for i, (ratio, year, cost) in enumerate(zip(ratio_percent_p1, years_p1_sampled, costs_billion_p1)):
+        ax.bar3d(ratio, year, 0, bar_width, 2, cost, alpha=0.6, 
+                 color='#1f77b4', edgecolor='black', linewidth=0.5)
+    
+    # 绘制Problem 2的3D柱形图
+    for i, (ratio, year, cost) in enumerate(zip(ratio_percent_p2, years_p2_sampled, costs_billion_p2)):
+        ax.bar3d(ratio + bar_width, year, 0, bar_width, 2, cost, alpha=0.6, 
+                 color='#2ca02c', edgecolor='black', linewidth=0.5)
+    
+    # 设置坐标轴标签
+    ax.set_xlabel('Space Elevator Ratio (%)', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Time Required (Years)', fontsize=12, fontweight='bold')
+    ax.set_zlabel('Total Cost (Billion USD)', fontsize=12, fontweight='bold')
+    
+    # 设置标题
+    ax.set_title('3D Reliability Impact Analysis: Cost & Time vs Ratio (Bar Chart)', 
+                fontsize=16, fontweight='bold')
+    
+    # 添加图例
+    legend_elements = [
+        mpatches.Patch(facecolor='#1f77b4', alpha=0.6, edgecolor='black', label='Problem 1 (100% Reliability)'),
+        mpatches.Patch(facecolor='#2ca02c', alpha=0.6, edgecolor='black', label='Problem 2 (Current Reliability)')
+    ]
+    ax.legend(handles=legend_elements, loc='upper right', fontsize=11)
+    
+    # 添加说明文字
+    fig.text(0.5, 0.02, 'Note: 3D bar chart with 10% step shows minimal differences between Problem 1 and Problem 2', 
+             ha='center', fontsize=11, style='italic', color='#666666')
+    
+    # 调整视角以获得最佳观察角度
+    ax.view_init(elev=25, azim=45)
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_3d_analysis.png')
+    plt.savefig(output_file, dpi=150, bbox_inches='tight')
+    print(f'Reliability 3D analysis chart saved to {output_file}')
+
+
+def plot_reliability_3d_style1():
+    """Style 1: Modern color scheme 3D bar chart
+    
+    目的：使用现代配色方案和更好的视觉效果创建3D柱形图
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 提高步长：从1%提高到10%
+    step_indices = list(range(0, len(ratios_p1), 10))
+    
+    # 转换为百分比和十亿美元
+    ratio_percent_p1 = [ratios_p1[i] * 100 for i in step_indices]
+    ratio_percent_p2 = [ratios_p2[i] * 100 for i in step_indices]
+    years_p1_sampled = [years_p1[i] for i in step_indices]
+    years_p2_sampled = [years_p2[i] for i in step_indices]
+    costs_billion_p1 = [costs_p1[i] / 1e9 for i in step_indices]
+    costs_billion_p2 = [costs_p2[i] / 1e9 for i in step_indices]
+    
+    # 创建3D图表
+    fig = plt.figure(figsize=(18, 12))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # 设置现代风格
+    plt.style.use('seaborn-v0_8-whitegrid')
+    plt.rcParams.update({'font.size': 12, })
+    
+    # 柱形尺寸
+    bar_width = 3.0
+    bar_depth = 3.0
+    
+    # 现代配色方案
+    colors_p1 = '#4361ee'  # 现代蓝色
+    colors_p2 = '#3a0ca3'  # 现代紫色
+    
+    # 绘制Problem 1的3D柱形图
+    for i, (ratio, year, cost) in enumerate(zip(ratio_percent_p1, years_p1_sampled, costs_billion_p1)):
+        ax.bar3d(ratio, year, 0, bar_width, 2, cost, alpha=0.8, 
+                 color=colors_p1, edgecolor='#2b2d42', linewidth=0.8, 
+                 shade=True)
+    
+    # 绘制Problem 2的3D柱形图
+    for i, (ratio, year, cost) in enumerate(zip(ratio_percent_p2, years_p2_sampled, costs_billion_p2)):
+        ax.bar3d(ratio + bar_width + 1, year, 0, bar_width, 2, cost, alpha=0.8, 
+                 color=colors_p2, edgecolor='#2b2d42', linewidth=0.8, 
+                 shade=True)
+    
+    # 设置坐标轴标签
+    ax.set_xlabel('Space Elevator Ratio (%)', fontsize=14, fontweight='bold', color='#2b2d42')
+    ax.set_ylabel('Time Required (Years)', fontsize=14, fontweight='bold', color='#2b2d42')
+    ax.set_zlabel('Total Cost (Billion USD)', fontsize=14, fontweight='bold', color='#2b2d42')
+    
+    # 设置标题
+    ax.set_title('Style 1: Modern 3D Reliability Impact Analysis', 
+                fontsize=18, fontweight='bold', color='#2b2d42')
+    
+    # 添加图例
+    legend_elements = [
+        mpatches.Patch(facecolor=colors_p1, alpha=0.8, edgecolor='#2b2d42', label='Problem 1 (100% Reliability)'),
+        mpatches.Patch(facecolor=colors_p2, alpha=0.8, edgecolor='#2b2d42', label='Problem 2 (Current Reliability)')
+    ]
+    ax.legend(handles=legend_elements, loc='upper right', fontsize=12, frameon=True, framealpha=0.9)
+    
+    # 添加说明文字
+    fig.text(0.5, 0.02, 'Modern 3D visualization with enhanced color scheme and styling', 
+             ha='center', fontsize=12, style='italic', color='#666666')
+    
+    # 调整视角以获得最佳观察角度
+    ax.view_init(elev=30, azim=60)
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_3d_style1.png')
+    plt.savefig(output_file, dpi=200, bbox_inches='tight')
+    print(f'Style 1 chart saved to {output_file}')
+
+
+def plot_reliability_3d_style2():
+    """Style 2: Different perspective and layout 3D bar chart
+    
+    目的：使用不同视角和布局创建3D柱形图
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 提高步长：从1%提高到10%
+    step_indices = list(range(0, len(ratios_p1), 10))
+    
+    # 转换为百分比和十亿美元
+    ratio_percent_p1 = [ratios_p1[i] * 100 for i in step_indices]
+    ratio_percent_p2 = [ratios_p2[i] * 100 for i in step_indices]
+    years_p1_sampled = [years_p1[i] for i in step_indices]
+    years_p2_sampled = [years_p2[i] for i in step_indices]
+    costs_billion_p1 = [costs_p1[i] / 1e9 for i in step_indices]
+    costs_billion_p2 = [costs_p2[i] / 1e9 for i in step_indices]
+    
+    # 创建3D图表
+    fig = plt.figure(figsize=(20, 14))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # 设置风格
+    plt.style.use('seaborn-v0_8-darkgrid')
+    plt.rcParams.update({'font.size': 12})
+    
+    # 柱形尺寸
+    bar_width = 4.0
+    bar_depth = 4.0
+    
+    # 明亮的配色方案
+    colors_p1 = '#4cc9f0'  # 亮蓝色
+    colors_p2 = '#4895ef'  # 深蓝色
+    
+    # 绘制Problem 1的3D柱形图
+    for i, (ratio, year, cost) in enumerate(zip(ratio_percent_p1, years_p1_sampled, costs_billion_p1)):
+        ax.bar3d(ratio, year, 0, bar_width, 3, cost, alpha=0.7, 
+                 color=colors_p1, edgecolor='white', linewidth=1.0, 
+                 shade=True)
+    
+    # 绘制Problem 2的3D柱形图
+    for i, (ratio, year, cost) in enumerate(zip(ratio_percent_p2, years_p2_sampled, costs_billion_p2)):
+        ax.bar3d(ratio + bar_width + 1, year, 0, bar_width, 3, cost, alpha=0.7, 
+                 color=colors_p2, edgecolor='white', linewidth=1.0, 
+                 shade=True)
+    
+    # 设置坐标轴标签
+    ax.set_xlabel('Space Elevator Ratio (%)', fontsize=14, fontweight='bold', color='white')
+    ax.set_ylabel('Time Required (Years)', fontsize=14, fontweight='bold', color='white')
+    ax.set_zlabel('Total Cost (Billion USD)', fontsize=14, fontweight='bold', color='white')
+    
+    # 设置标题
+    ax.set_title('Style 2: Alternative Perspective 3D Analysis', 
+                fontsize=18, fontweight='bold', color='white')
+    
+    # 添加图例
+    legend_elements = [
+        mpatches.Patch(facecolor=colors_p1, alpha=0.7, edgecolor='white', label='Problem 1 (100% Reliability)'),
+        mpatches.Patch(facecolor=colors_p2, alpha=0.7, edgecolor='white', label='Problem 2 (Current Reliability)')
+    ]
+    ax.legend(handles=legend_elements, loc='upper right', fontsize=12, frameon=True, framealpha=0.9)
+    
+    # 添加说明文字
+    fig.text(0.5, 0.02, 'Alternative perspective with enhanced depth and spacing', 
+             ha='center', fontsize=12, style='italic', color='white')
+    
+    # 调整视角以获得最佳观察角度
+    ax.view_init(elev=45, azim=30)
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_3d_style2.png')
+    plt.savefig(output_file, dpi=200, bbox_inches='tight')
+    print(f'Style 2 chart saved to {output_file}')
+
+
+def plot_reliability_3d_style3():
+    """Style 3: Different bar style and arrangement 3D chart
+    
+    目的：使用不同柱形样式和排列方式创建3D图表
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 提高步长：从1%提高到10%
+    step_indices = list(range(0, len(ratios_p1), 10))
+    
+    # 转换为百分比和十亿美元
+    ratio_percent_p1 = [ratios_p1[i] * 100 for i in step_indices]
+    ratio_percent_p2 = [ratios_p2[i] * 100 for i in step_indices]
+    years_p1_sampled = [years_p1[i] for i in step_indices]
+    years_p2_sampled = [years_p2[i] for i in step_indices]
+    costs_billion_p1 = [costs_p1[i] / 1e9 for i in step_indices]
+    costs_billion_p2 = [costs_p2[i] / 1e9 for i in step_indices]
+    
+    # 创建3D图表
+    fig = plt.figure(figsize=(18, 12))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # 设置风格
+    plt.style.use('seaborn-v0_8-bright')
+    plt.rcParams.update({'font.size': 12})
+    
+    # 柱形尺寸
+    bar_width = 3.5
+    bar_depth = 3.5
+    
+    # 渐变配色方案
+    colors_p1 = '#f72585'  # 粉红色
+    colors_p2 = '#7209b7'  # 紫色
+    
+    # 绘制Problem 1的3D柱形图
+    for i, (ratio, year, cost) in enumerate(zip(ratio_percent_p1, years_p1_sampled, costs_billion_p1)):
+        ax.bar3d(ratio, year, 0, bar_width, 2.5, cost, alpha=0.9, 
+                 color=colors_p1, edgecolor='#2b2d42', linewidth=0.5, 
+                 shade=False)
+    
+    # 绘制Problem 2的3D柱形图
+    for i, (ratio, year, cost) in enumerate(zip(ratio_percent_p2, years_p2_sampled, costs_billion_p2)):
+        ax.bar3d(ratio, year + 3, 0, bar_width, 2.5, cost, alpha=0.9, 
+                 color=colors_p2, edgecolor='#2b2d42', linewidth=0.5, 
+                 shade=False)
+    
+    # 设置坐标轴标签
+    ax.set_xlabel('Space Elevator Ratio (%)', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Time Required (Years)', fontsize=14, fontweight='bold')
+    ax.set_zlabel('Total Cost (Billion USD)', fontsize=14, fontweight='bold')
+    
+    # 设置标题
+    ax.set_title('Style 3: Stacked Arrangement 3D Analysis', 
+                fontsize=18, fontweight='bold')
+    
+    # 添加图例
+    legend_elements = [
+        mpatches.Patch(facecolor=colors_p1, alpha=0.9, edgecolor='#2b2d42', label='Problem 1 (100% Reliability)'),
+        mpatches.Patch(facecolor=colors_p2, alpha=0.9, edgecolor='#2b2d42', label='Problem 2 (Current Reliability)')
+    ]
+    ax.legend(handles=legend_elements, loc='upper right', fontsize=12)
+    
+    # 添加说明文字
+    fig.text(0.5, 0.02, 'Stacked arrangement with vibrant colors and simplified styling', 
+             ha='center', fontsize=12, style='italic', color='#666666')
+    
+    # 调整视角以获得最佳观察角度
+    ax.view_init(elev=35, azim=75)
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_3d_style3.png')
+    plt.savefig(output_file, dpi=200, bbox_inches='tight')
+    print(f'Style 3 chart saved to {output_file}')
+
+
+def plot_reliability_3d_style4():
+    """Style 4: 3D chart with more interactive elements and annotations
+    
+    目的：添加更多交互元素和标注创建3D图表
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 提高步长：从1%提高到10%
+    step_indices = list(range(0, len(ratios_p1), 10))
+    
+    # 转换为百分比和十亿美元
+    ratio_percent_p1 = [ratios_p1[i] * 100 for i in step_indices]
+    ratio_percent_p2 = [ratios_p2[i] * 100 for i in step_indices]
+    years_p1_sampled = [years_p1[i] for i in step_indices]
+    years_p2_sampled = [years_p2[i] for i in step_indices]
+    costs_billion_p1 = [costs_p1[i] / 1e9 for i in step_indices]
+    costs_billion_p2 = [costs_p2[i] / 1e9 for i in step_indices]
+    
+    # 创建3D图表
+    fig = plt.figure(figsize=(20, 14))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # 设置风格
+    plt.style.use('seaborn-v0_8-pastel')
+    plt.rcParams.update({'font.size': 12})
+    
+    # 柱形尺寸
+    bar_width = 3.0
+    bar_depth = 3.0
+    
+    # 柔和的配色方案
+    colors_p1 = '#90e0ef'  # 浅蓝色
+    colors_p2 = '#00b4d8'  # 深蓝色
+    
+    # 绘制Problem 1的3D柱形图
+    for i, (ratio, year, cost) in enumerate(zip(ratio_percent_p1, years_p1_sampled, costs_billion_p1)):
+        ax.bar3d(ratio, year, 0, bar_width, 2, cost, alpha=0.8, 
+                 color=colors_p1, edgecolor='#03045e', linewidth=0.8)
+    
+    # 绘制Problem 2的3D柱形图
+    for i, (ratio, year, cost) in enumerate(zip(ratio_percent_p2, years_p2_sampled, costs_billion_p2)):
+        ax.bar3d(ratio + bar_width + 1, year, 0, bar_width, 2, cost, alpha=0.8, 
+                 color=colors_p2, edgecolor='#03045e', linewidth=0.8)
+    
+    # 添加数据标注
+    for i, (ratio, year, cost) in enumerate(zip(ratio_percent_p1, years_p1_sampled, costs_billion_p1)):
+        if i % 2 == 0:  # 每两个点标注一个
+            ax.text(ratio + bar_width/2, year + 1, cost + 5, 
+                    f'{cost:.1f}B', 
+                    fontsize=10, ha='center', va='bottom', color='#03045e')
+    
+    # 设置坐标轴标签
+    ax.set_xlabel('Space Elevator Ratio (%)', fontsize=14, fontweight='bold', color='#03045e')
+    ax.set_ylabel('Time Required (Years)', fontsize=14, fontweight='bold', color='#03045e')
+    ax.set_zlabel('Total Cost (Billion USD)', fontsize=14, fontweight='bold', color='#03045e')
+    
+    # 设置标题
+    ax.set_title('Style 4: Enhanced 3D Analysis with Annotations', 
+                fontsize=18, fontweight='bold', color='#03045e')
+    
+    # 添加图例
+    legend_elements = [
+        mpatches.Patch(facecolor=colors_p1, alpha=0.8, edgecolor='#03045e', label='Problem 1 (100% Reliability)'),
+        mpatches.Patch(facecolor=colors_p2, alpha=0.8, edgecolor='#03045e', label='Problem 2 (Current Reliability)')
+    ]
+    ax.legend(handles=legend_elements, loc='upper right', fontsize=12, frameon=True, framealpha=0.9)
+    
+    # 添加说明文字
+    fig.text(0.5, 0.02, 'Enhanced visualization with data annotations and detailed styling', 
+             ha='center', fontsize=12, style='italic', color='#666666')
+    
+    # 调整视角以获得最佳观察角度
+    ax.view_init(elev=20, azim=45)
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_3d_style4.png')
+    plt.savefig(output_file, dpi=200, bbox_inches='tight')
+    print(f'Style 4 chart saved to {output_file}')
+
+
+def plot_reliability_3d_scatter_diff():
+    """3D Scatter Plot showing differences between Problem 1 and Problem 2
+    
+    目的：使用3D散点图显示两个问题的差值分析
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 提高步长：从1%提高到10%
+    step_indices = list(range(0, len(ratios_p1), 10))
+    
+    # 转换为百分比和十亿美元
+    ratio_percent = [ratios_p1[i] * 100 for i in step_indices]
+    years_p1_sampled = [years_p1[i] for i in step_indices]
+    years_p2_sampled = [years_p2[i] for i in step_indices]
+    costs_billion_p1 = [costs_p1[i] / 1e9 for i in step_indices]
+    costs_billion_p2 = [costs_p2[i] / 1e9 for i in step_indices]
+    
+    # 计算差值
+    cost_diff = [costs_billion_p2[i] - costs_billion_p1[i] for i in range(len(costs_billion_p1))]
+    year_diff = [years_p2_sampled[i] - years_p1_sampled[i] for i in range(len(years_p1_sampled))]
+    
+    # 创建3D图表
+    fig = plt.figure(figsize=(18, 12))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # 设置风格
+    plt.style.use('seaborn-v0_8-whitegrid')
+    plt.rcParams.update({'font.size': 12})
+    
+    # 绘制3D散点图
+    scatter = ax.scatter(ratio_percent, year_diff, cost_diff, 
+                        c=cost_diff, cmap='RdYlBu_r', s=200, 
+                        alpha=0.7, edgecolors='black', linewidth=1.5)
+    
+    # 添加颜色条
+    cbar = plt.colorbar(scatter, ax=ax, shrink=0.5, aspect=20)
+    cbar.set_label('Cost Difference (Billion USD)', fontsize=12, fontweight='bold')
+    
+    # 添加参考平面（零平面）
+    xx, yy = np.meshgrid(np.linspace(0, 100, 10), np.linspace(-5, 5, 10))
+    zz = np.zeros_like(xx)
+    ax.plot_surface(xx, yy, zz, alpha=0.2, color='gray')
+    
+    # 设置坐标轴标签
+    ax.set_xlabel('Space Elevator Ratio (%)', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Time Difference (Years)', fontsize=14, fontweight='bold')
+    ax.set_zlabel('Cost Difference (Billion USD)', fontsize=14, fontweight='bold')
+    
+    # 设置标题
+    ax.set_title('3D Scatter Plot: Reliability Impact Analysis (Differences)', 
+                fontsize=18, fontweight='bold')
+    
+    # 添加说明文字
+    fig.text(0.5, 0.02, '3D scatter plot showing cost and time differences between Problem 1 and Problem 2', 
+             ha='center', fontsize=11, style='italic', color='#666666')
+    
+    # 调整视角
+    ax.view_init(elev=25, azim=45)
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_3d_scatter_diff.png')
+    plt.savefig(output_file, dpi=200, bbox_inches='tight')
+    print(f'3D scatter difference chart saved to {output_file}')
+
+
+def plot_reliability_3d_surface():
+    """3D Surface Plot showing cost variations
+    
+    目的：使用3D表面图显示成本变化趋势
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 提高步长：从1%提高到10%
+    step_indices = list(range(0, len(ratios_p1), 10))
+    
+    # 转换为百分比和十亿美元
+    ratio_percent = [ratios_p1[i] * 100 for i in step_indices]
+    years_p1_sampled = [years_p1[i] for i in step_indices]
+    years_p2_sampled = [years_p2[i] for i in step_indices]
+    costs_billion_p1 = [costs_p1[i] / 1e9 for i in step_indices]
+    costs_billion_p2 = [costs_p2[i] / 1e9 for i in step_indices]
+    
+    # 创建网格数据
+    X, Y = np.meshgrid(ratio_percent, years_p1_sampled)
+    Z1 = np.array([costs_billion_p1] * len(years_p1_sampled))
+    Z2 = np.array([costs_billion_p2] * len(years_p2_sampled))
+    
+    # 创建3D图表
+    fig = plt.figure(figsize=(20, 14))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # 设置风格
+    plt.style.use('seaborn-v0_8-darkgrid')
+    plt.rcParams.update({'font.size': 12})
+    
+    # 改进的颜色映射
+    cmap_p1 = 'viridis'  # 更现代的颜色映射
+    cmap_p2 = 'plasma'    # 更现代的颜色映射
+    
+    # 绘制Problem 1的表面（改进版）
+    surf1 = ax.plot_surface(X, Y, Z1, 
+                          alpha=0.8,           # 提高透明度
+                          cmap=cmap_p1,        # 改进的颜色映射
+                          edgecolor='white',   # 添加边缘
+                          linewidth=0.5,       # 边缘线宽
+                          antialiased=True,    # 抗锯齿
+                          shade=True)          # 添加阴影
+    
+    # 绘制Problem 2的表面（稍微偏移，改进版）
+    Y_shifted = Y + 2  # 增加偏移量，提高可读性
+    surf2 = ax.plot_surface(X, Y_shifted, Z2, 
+                          alpha=0.8,           # 提高透明度
+                          cmap=cmap_p2,        # 改进的颜色映射
+                          edgecolor='white',   # 添加边缘
+                          linewidth=0.5,       # 边缘线宽
+                          antialiased=True,    # 抗锯齿
+                          shade=True)          # 添加阴影
+    
+    # 优化颜色条位置和样式
+    cbar1 = plt.colorbar(surf1, ax=ax, shrink=0.5, aspect=25, pad=0.015)
+    cbar1.set_label('Problem 1 Cost (Billion USD)', fontsize=11, fontweight='bold', color='black')
+    cbar1.ax.tick_params(color='black', labelcolor='black', labelsize=10)
+    cbar1.outline.set_edgecolor('black')
+    
+    cbar2 = plt.colorbar(surf2, ax=ax, shrink=0.5, aspect=25, pad=0.015)
+    cbar2.set_label('Problem 2 Cost (Billion USD)', fontsize=11, fontweight='bold', color='black')
+    cbar2.ax.tick_params(color='black', labelcolor='black', labelsize=10)
+    cbar2.outline.set_edgecolor('black')
+    
+    # 添加参考平面（零平面）
+    xx, yy = np.meshgrid(np.linspace(0, 100, 20), np.linspace(0, max(years_p1_sampled) + 5, 20))
+    zz = np.zeros_like(xx)
+    ax.plot_surface(xx, yy, zz, alpha=0.1, color='gray', edgecolor='none')
+    
+    # 优化数据点标注：更稀疏、更美观的排布
+    annotation_count = 0
+    max_annotations = 6  # 限制总标注数量
+    annotation_step = max(1, len(ratio_percent) // max_annotations)
+    key_ratios = [0, 50, 100]  # 0%, 50%, 100%比例点
+    for ratio in key_ratios:
+        if ratio in ratio_percent:
+            idx = ratio_percent.index(ratio)
+            cost = costs_billion_p1[idx]
+            year = years_p1_sampled[idx]
+            ax.text(ratio, year, cost + 12, 
+                    f'{ratio}%: {cost:.1f}B', 
+                    fontsize=9, 
+                    ha='center', 
+                    va='bottom', 
+                    color='yellow', 
+                    fontweight='bold',
+                    bbox=dict(facecolor='black', 
+                             alpha=0.9, 
+                             edgecolor='yellow', 
+                             boxstyle='round,pad=0.4'),
+                    zorder=10)  # 设置高zorder确保在最上层
+    
+    # 设置坐标轴标签
+    ax.set_xlabel('Space Elevator Ratio (%)', 
+                 fontsize=16, fontweight='bold', color='black', 
+                 labelpad=20)  # 增加标签间距
+    ax.set_ylabel('Time Required (Years)', 
+                 fontsize=16, fontweight='bold', color='black', 
+                 labelpad=20)  # 增加标签间距
+    ax.set_zlabel('Total Cost (Billion USD)', 
+                 fontsize=16, fontweight='bold', color='black', 
+                 labelpad=20)  # 增加标签间距
+    
+    # 设置坐标轴刻度
+    ax.tick_params(axis='x', colors='black', labelsize=12)
+    ax.tick_params(axis='y', colors='black', labelsize=12)
+    ax.tick_params(axis='z', colors='black', labelsize=12)
+    
+    # 优化刻度显示
+    ax.set_xticks([0, 20, 40, 60, 80, 100])
+    ax.set_xticklabels(['0%', '20%', '40%', '60%', '80%', '100%'], color='black')
+    
+    # 优化图例位置和样式
+    legend_elements = [
+        mpatches.Patch(facecolor='#1f77b4', alpha=0.8, edgecolor='black', label='Problem 1 (100% Reliability)'),
+        mpatches.Patch(facecolor='#ff7f0e', alpha=0.8, edgecolor='black', label='Problem 2 (Current Reliability)')
+    ]
+    
+    # 将图例移到右下角，避免遮挡数据
+    ax.legend(handles=legend_elements, 
+              loc='upper left', 
+              fontsize=12, 
+              frameon=True, 
+              framealpha=0.9, 
+              facecolor='white', 
+              edgecolor='black',
+              labelcolor='black',
+              borderpad=1,
+              labelspacing=0.8)
+    
+    # 视角
+    ax.view_init(elev=32, azim=66)
+    
+    # 设置图表背景为白色
+    ax.set_facecolor('white')  # 白色背景
+    fig.patch.set_facecolor('white')  # 白色画布背景
+    
+    # 添加网格线，提高可读性
+    ax.xaxis._axinfo['grid'].update(color='gray', linestyle='--', alpha=0.3)
+    ax.yaxis._axinfo['grid'].update(color='gray', linestyle='--', alpha=0.3)
+    ax.zaxis._axinfo['grid'].update(color='gray', linestyle='--', alpha=0.3)
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_3d_surface.png')
+    plt.savefig(output_file, dpi=250, bbox_inches='tight')
+    print(f'Enhanced 3D surface chart saved to {output_file}')
+
+
+def plot_reliability_3d_wireframe():
+    """3D Wireframe Plot showing cost structure
+    
+    目的：使用3D线框图显示成本结构
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 提高步长：从1%提高到10%
+    step_indices = list(range(0, len(ratios_p1), 10))
+    
+    # 转换为百分比和十亿美元
+    ratio_percent = [ratios_p1[i] * 100 for i in step_indices]
+    years_p1_sampled = [years_p1[i] for i in step_indices]
+    years_p2_sampled = [years_p2[i] for i in step_indices]
+    costs_billion_p1 = [costs_p1[i] / 1e9 for i in step_indices]
+    costs_billion_p2 = [costs_p2[i] / 1e9 for i in step_indices]
+    
+    # 创建网格数据
+    X, Y = np.meshgrid(ratio_percent, years_p1_sampled)
+    Z1 = np.array([costs_billion_p1] * len(years_p1_sampled))
+    Z2 = np.array([costs_billion_p2] * len(years_p2_sampled))
+    
+    # 创建3D图表
+    fig = plt.figure(figsize=(18, 12))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # 设置风格
+    plt.style.use('seaborn-v0_8-whitegrid')
+    plt.rcParams.update({'font.size': 12})
+    
+    # 绘制Problem 1的线框
+    wire1 = ax.plot_wireframe(X, Y, Z1, color='blue', alpha=0.6, 
+                             linewidth=1.5, rstride=1, cstride=1)
+    
+    # 绘制Problem 2的线框（稍微偏移）
+    Y_shifted = Y + 1
+    wire2 = ax.plot_wireframe(X, Y_shifted, Z2, color='red', alpha=0.6, 
+                             linewidth=1.5, rstride=1, cstride=1)
+    
+    # 设置坐标轴标签
+    ax.set_xlabel('Space Elevator Ratio (%)', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Time Required (Years)', fontsize=14, fontweight='bold')
+    ax.set_zlabel('Total Cost (Billion USD)', fontsize=14, fontweight='bold')
+    
+    # 设置标题
+    ax.set_title('3D Wireframe Plot: Cost Structure Analysis', 
+                fontsize=18, fontweight='bold')
+    
+    # 添加图例
+    legend_elements = [
+        mpatches.Patch(facecolor='blue', alpha=0.6, label='Problem 1 (100% Reliability)'),
+        mpatches.Patch(facecolor='red', alpha=0.6, label='Problem 2 (Current Reliability)')
+    ]
+    ax.legend(handles=legend_elements, loc='upper right', fontsize=11)
+    
+    # 添加说明文字
+    fig.text(0.5, 0.02, '3D wireframe visualization showing underlying structure of cost variations', 
+             ha='center', fontsize=11, style='italic', color='#666666')
+    
+    # 调整视角
+    ax.view_init(elev=35, azim=45)
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_3d_wireframe.png')
+    plt.savefig(output_file, dpi=200, bbox_inches='tight')
+    print(f'3D wireframe chart saved to {output_file}')
+
+
+def plot_reliability_3d_relative_bars():
+    """3D Bar Chart showing relative differences
+    
+    目的：使用3D柱形图显示相对差异
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 提高步长：从1%提高到10%
+    step_indices = list(range(0, len(ratios_p1), 10))
+    
+    # 转换为百分比和十亿美元
+    ratio_percent = [ratios_p1[i] * 100 for i in step_indices]
+    years_p1_sampled = [years_p1[i] for i in step_indices]
+    years_p2_sampled = [years_p2[i] for i in step_indices]
+    costs_billion_p1 = [costs_p1[i] / 1e9 for i in step_indices]
+    costs_billion_p2 = [costs_p2[i] / 1e9 for i in step_indices]
+    
+    # 计算相对差异（百分比）
+    cost_rel_diff = [((costs_billion_p2[i] - costs_billion_p1[i]) / costs_billion_p1[i]) * 100 
+                    for i in range(len(costs_billion_p1))]
+    year_rel_diff = [((years_p2_sampled[i] - years_p1_sampled[i]) / years_p1_sampled[i]) * 100 
+                    for i in range(len(years_p1_sampled))]
+    
+    # 创建3D图表
+    fig = plt.figure(figsize=(18, 12))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # 设置风格
+    plt.style.use('seaborn-v0_8-bright')
+    plt.rcParams.update({'font.size': 12})
+    
+    # 柱形尺寸
+    bar_width = 3.0
+    bar_depth = 3.0
+    
+    # 绘制成本相对差异的柱形图
+    for i, (ratio, diff) in enumerate(zip(ratio_percent, cost_rel_diff)):
+        color = 'red' if diff > 0 else 'green'
+        ax.bar3d(ratio, 0, 0, bar_width, 1, abs(diff), alpha=0.8, 
+                 color=color, edgecolor='black', linewidth=0.8)
+    
+    # 绘制时间相对差异的柱形图（偏移）
+    for i, (ratio, diff) in enumerate(zip(ratio_percent, year_rel_diff)):
+        color = 'red' if diff > 0 else 'green'
+        ax.bar3d(ratio, 2, 0, bar_width, 1, abs(diff), alpha=0.8, 
+                 color=color, edgecolor='black', linewidth=0.8)
+    
+    # 添加零平面
+    xx, yy = np.meshgrid(np.linspace(0, 100, 10), np.linspace(0, 3, 10))
+    zz = np.zeros_like(xx)
+    ax.plot_surface(xx, yy, zz, alpha=0.1, color='gray')
+    
+    # 设置坐标轴标签
+    ax.set_xlabel('Space Elevator Ratio (%)', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Metric Type', fontsize=14, fontweight='bold')
+    ax.set_zlabel('Relative Difference (%)', fontsize=14, fontweight='bold')
+    
+    # 设置Y轴刻度
+    ax.set_yticks([0.5, 2.5])
+    ax.set_yticklabels(['Cost', 'Time'])
+    
+    # 设置标题
+    ax.set_title('3D Bar Chart: Relative Differences (Problem 2 vs Problem 1)', 
+                fontsize=18, fontweight='bold')
+    
+    # 添加图例
+    legend_elements = [
+        mpatches.Patch(facecolor='red', alpha=0.8, edgecolor='black', label='Increase'),
+        mpatches.Patch(facecolor='green', alpha=0.8, edgecolor='black', label='Decrease')
+    ]
+    ax.legend(handles=legend_elements, loc='upper right', fontsize=11)
+    
+    # 添加说明文字
+    fig.text(0.5, 0.02, '3D bar chart showing relative percentage differences in cost and time', 
+             ha='center', fontsize=11, style='italic', color='#666666')
+    
+    # 调整视角
+    ax.view_init(elev=25, azim=45)
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_3d_relative_bars.png')
+    plt.savefig(output_file, dpi=200, bbox_inches='tight')
+    print(f'3D relative bars chart saved to {output_file}')
+
+
+def plot_reliability_3d_contour():
+    """3D Contour Plot showing cost variations
+    
+    目的：使用3D等高线图显示成本变化
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 提高步长：从1%提高到10%
+    step_indices = list(range(0, len(ratios_p1), 10))
+    
+    # 转换为百分比和十亿美元
+    ratio_percent = [ratios_p1[i] * 100 for i in step_indices]
+    years_p1_sampled = [years_p1[i] for i in step_indices]
+    costs_billion_p1 = [costs_p1[i] / 1e9 for i in step_indices]
+    
+    # 创建网格数据
+    X, Y = np.meshgrid(ratio_percent, years_p1_sampled)
+    Z = np.array([costs_billion_p1] * len(years_p1_sampled))
+    
+    # 创建3D图表
+    fig = plt.figure(figsize=(18, 12))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # 设置风格
+    plt.style.use('seaborn-v0_8-whitegrid')
+    plt.rcParams.update({'font.size': 12})
+    
+    # 绘制3D等高线图
+    contour = ax.contourf(X, Y, Z, levels=20, cmap='viridis', alpha=0.8)
+    
+    # 添加颜色条
+    cbar = plt.colorbar(contour, ax=ax, shrink=0.5, aspect=20)
+    cbar.set_label('Cost (Billion USD)', fontsize=12, fontweight='bold')
+    
+    # 设置坐标轴标签
+    ax.set_xlabel('Space Elevator Ratio (%)', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Time Required (Years)', fontsize=14, fontweight='bold')
+    ax.set_zlabel('Total Cost (Billion USD)', fontsize=14, fontweight='bold')
+    
+    # 设置标题
+    ax.set_title('3D Contour Plot: Cost Variations (Problem 1)', 
+                fontsize=18, fontweight='bold')
+    
+    # 添加说明文字
+    fig.text(0.5, 0.02, '3D contour visualization showing cost variations across different ratios and time periods', 
+             ha='center', fontsize=11, style='italic', color='#666666')
+    
+    # 调整视角
+    ax.view_init(elev=45, azim=45)
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_3d_contour.png')
+    plt.savefig(output_file, dpi=200, bbox_inches='tight')
+    print(f'3D contour chart saved to {output_file}')
+
+
+def plot_reliability_3d_waterfall():
+    """3D Waterfall Plot showing cost breakdown
+    
+    目的：使用3D瀑布图显示成本分解
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 提高步长：从1%提高到10%
+    step_indices = list(range(0, len(ratios_p1), 10))
+    
+    # 转换为百分比和十亿美元
+    ratio_percent = [ratios_p1[i] * 100 for i in step_indices]
+    years_p1_sampled = [years_p1[i] for i in step_indices]
+    years_p2_sampled = [years_p2[i] for i in step_indices]
+    costs_billion_p1 = [costs_p1[i] / 1e9 for i in step_indices]
+    costs_billion_p2 = [costs_p2[i] / 1e9 for i in step_indices]
+    
+    # 创建3D图表
+    fig = plt.figure(figsize=(18, 12))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # 设置风格
+    plt.style.use('seaborn-v0_8-whitegrid')
+    plt.rcParams.update({'font.size': 12})
+    
+    # 柱形尺寸
+    bar_width = 3.0
+    bar_depth = 3.0
+    
+    # 绘制瀑布图
+    current_height = 0
+    for i, (ratio, cost1, cost2) in enumerate(zip(ratio_percent, costs_billion_p1, costs_billion_p2)):
+        # Problem 1的柱形
+        ax.bar3d(ratio, 0, 0, bar_width, 1, cost1, alpha=0.8, 
+                 color='#4361ee', edgecolor='black', linewidth=0.8)
+        
+        # Problem 2的柱形（堆叠）
+        ax.bar3d(ratio, 1, 0, bar_width, 1, cost2, alpha=0.8, 
+                 color='#3a0ca3', edgecolor='black', linewidth=0.8)
+        
+        # 连接线
+        ax.plot([ratio, ratio], [0, 1], [cost1, cost2], 
+                color='gray', linestyle='--', linewidth=1.5, alpha=0.6)
+    
+    # 设置坐标轴标签
+    ax.set_xlabel('Space Elevator Ratio (%)', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Problem Type', fontsize=14, fontweight='bold')
+    ax.set_zlabel('Cost (Billion USD)', fontsize=14, fontweight='bold')
+    
+    # 设置Y轴刻度
+    ax.set_yticks([0.5, 1.5])
+    ax.set_yticklabels(['Problem 1', 'Problem 2'])
+    
+    # 设置标题
+    ax.set_title('3D Waterfall Plot: Cost Comparison Between Problems', 
+                fontsize=18, fontweight='bold')
+    
+    # 添加图例
+    legend_elements = [
+        mpatches.Patch(facecolor='#4361ee', alpha=0.8, edgecolor='black', label='Problem 1 (100% Reliability)'),
+        mpatches.Patch(facecolor='#3a0ca3', alpha=0.8, edgecolor='black', label='Problem 2 (Current Reliability)')
+    ]
+    ax.legend(handles=legend_elements, loc='upper right', fontsize=11)
+    
+    # 添加说明文字
+    fig.text(0.5, 0.02, '3D waterfall visualization showing cost progression from Problem 1 to Problem 2', 
+             ha='center', fontsize=11, style='italic', color='#666666')
+    
+    # 调整视角
+    ax.view_init(elev=25, azim=45)
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_3d_waterfall.png')
+    plt.savefig(output_file, dpi=200, bbox_inches='tight')
+    print(f'3D waterfall chart saved to {output_file}')
+
+
+def plot_reliability_3d_heatmap():
+    """3D Heatmap showing cost intensity
+    
+    目的：使用3D热力图显示成本强度
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 提高步长：从1%提高到10%
+    step_indices = list(range(0, len(ratios_p1), 10))
+    
+    # 转换为百分比和十亿美元
+    ratio_percent = [ratios_p1[i] * 100 for i in step_indices]
+    years_p1_sampled = [years_p1[i] for i in step_indices]
+    costs_billion_p1 = [costs_p1[i] / 1e9 for i in step_indices]
+    
+    # 创建网格数据
+    X, Y = np.meshgrid(ratio_percent, years_p1_sampled)
+    Z = np.array([costs_billion_p1] * len(years_p1_sampled))
+    
+    # 创建3D图表
+    fig = plt.figure(figsize=(18, 12))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # 设置风格
+    plt.style.use('seaborn-v0_8-darkgrid')
+    plt.rcParams.update({'font.size': 12})
+    
+    # 绘制3D热力图（使用柱形图模拟）
+    bar_width = 3.0
+    bar_depth = 3.0
+    
+    # 归一化成本值用于颜色映射
+    norm = plt.Normalize(vmin=min(costs_billion_p1), vmax=max(costs_billion_p1))
+    cmap = plt.cm.RdYlBu_r
+    
+    for i, (ratio, year, cost) in enumerate(zip(ratio_percent, years_p1_sampled, costs_billion_p1)):
+        color = cmap(norm(cost))
+        ax.bar3d(ratio, year, 0, bar_width, 1, cost, alpha=0.9, 
+                 color=color, edgecolor='black', linewidth=0.5)
+    
+    # 添加颜色条
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cbar = plt.colorbar(sm, ax=ax, shrink=0.5, aspect=20)
+    cbar.set_label('Cost (Billion USD)', fontsize=12, fontweight='bold')
+    
+    # 设置坐标轴标签
+    ax.set_xlabel('Space Elevator Ratio (%)', fontsize=14, fontweight='bold', color='white')
+    ax.set_ylabel('Time Required (Years)', fontsize=14, fontweight='bold', color='white')
+    ax.set_zlabel('Cost (Billion USD)', fontsize=14, fontweight='bold', color='white')
+    
+    # 设置标题
+    ax.set_title('3D Heatmap: Cost Intensity Analysis (Problem 1)', 
+                fontsize=18, fontweight='bold', color='white')
+    
+    # 添加说明文字
+    fig.text(0.5, 0.02, '3D heatmap visualization showing cost intensity across different ratios and time periods', 
+             ha='center', fontsize=11, style='italic', color='white')
+    
+    # 调整视角
+    ax.view_init(elev=45, azim=45)
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_3d_heatmap.png')
+    plt.savefig(output_file, dpi=200, bbox_inches='tight')
+    print(f'3D heatmap chart saved to {output_file}')
+
 # Main function
 def main():
     """Run all plotting functions for both problems"""
@@ -587,6 +1565,24 @@ def main():
     plot_reliability_comparison()
     plot_reliability_difference_analysis()
     plot_reliability_statistics()
+    plot_reliability_3d_analysis()
+    
+    # 绘制不同风格的3D图表
+    print("\n=== Different 3D Styles ===")
+    plot_reliability_3d_style1()
+    plot_reliability_3d_style2()
+    plot_reliability_3d_style3()
+    plot_reliability_3d_style4()
+    
+    # 绘制更多样化的3D图表
+    print("\n=== More 3D Visualizations ===")
+    plot_reliability_3d_scatter_diff()
+    plot_reliability_3d_surface()
+    plot_reliability_3d_wireframe()
+    plot_reliability_3d_relative_bars()
+    plot_reliability_3d_contour()
+    plot_reliability_3d_waterfall()
+    plot_reliability_3d_heatmap()
 
 # 绘制不同时间限制下的最优方案分析图
 def plot_time_limit_analysis(problem=2):
