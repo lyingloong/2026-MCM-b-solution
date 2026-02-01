@@ -77,13 +77,16 @@ def calculate_scenario_2(problem=2):
         "annual_capacity": total_annual_capacity
     }
 
-def calculate_scenario_3(problem=2):
+def calculate_scenario_3(problem=2, time_limit=None):
     """Scenario 3: Combined Space Elevator and Traditional Rockets (Finding Optimal Ratio)
     
-    计算太空电梯和传统火箭组合使用时的最优比例，以最小化总成本
+    计算太空电梯和传统火箭组合使用时的最优比例
+    - 如果提供了time_limit，则寻找能在该时间内完成且成本最小的组合
+    - 如果未提供time_limit，则寻找总成本最小的组合
     
     Args:
         problem (int): 问题编号，1表示Problem 1（100%可靠性），2表示Problem 2（当前可靠性）
+        time_limit (int, optional): 时间限制（年）。如果为None，则寻找总成本最小的组合
         
     Returns:
         dict: 包含场景名称、所需时间、完成年份、总成本、各部分运输量和比例的字典
@@ -99,8 +102,8 @@ def calculate_scenario_3(problem=2):
         cost_elevator_per = COST_ELEVATOR_PER_P2
         cost_rocket_per = COST_ROCKET_PER_P2
     
-    # 遍历不同的太空电梯比例（从0%到100%，步长2%）
-    for elevator_ratio in range(0, 101, 2):
+    # 遍历不同的太空电梯比例（从0%到100%，步长1%）
+    for elevator_ratio in range(0, 101, 1):
         elevator_ratio = elevator_ratio / 100
         rocket_ratio = 1 - elevator_ratio
         
@@ -138,20 +141,60 @@ def calculate_scenario_3(problem=2):
         total_cost = elevator_cost + rocket_cost
         
         # 更新最优解
-        if total_cost < min_total_cost:
-            min_total_cost = total_cost
-            best_scenario = {
-                "name": "Combined System",
-                "years_needed": years_needed,
-                "completion_year": START_YEAR + years_needed,
-                "total_cost": total_cost,
-                "elevator_material": elevator_material,
-                "rocket_material": rocket_material,
-                "elevator_ratio": elevator_ratio,
-                "rocket_ratio": rocket_ratio
-            }
+        if time_limit is None:
+            # 无时间限制，寻找总成本最小的方案
+            if total_cost < min_total_cost:
+                min_total_cost = total_cost
+                best_scenario = {
+                    "name": "Combined System",
+                    "years_needed": years_needed,
+                    "completion_year": START_YEAR + years_needed,
+                    "total_cost": total_cost,
+                    "elevator_material": elevator_material,
+                    "rocket_material": rocket_material,
+                    "elevator_ratio": elevator_ratio,
+                    "rocket_ratio": rocket_ratio
+                }
+        else:
+            # 有时间限制，寻找能在时间限制内完成且成本最小的方案
+            if years_needed <= time_limit and total_cost < min_total_cost:
+                min_total_cost = total_cost
+                best_scenario = {
+                    "name": "Combined System",
+                    "years_needed": years_needed,
+                    "completion_year": START_YEAR + years_needed,
+                    "total_cost": total_cost,
+                    "elevator_material": elevator_material,
+                    "rocket_material": rocket_material,
+                    "elevator_ratio": elevator_ratio,
+                    "rocket_ratio": rocket_ratio,
+                    "time_limit": time_limit
+                }
     
     return best_scenario
+
+# 计算不同时间限制下的最优组合方案
+def calculate_combined_scenarios_by_time_limit(problem=2, time_limits=None):
+    """计算不同时间限制下的最优组合方案
+    
+    Args:
+        problem (int): 问题编号，1表示Problem 1（100%可靠性），2表示Problem 2（当前可靠性）
+        time_limits (list, optional): 时间限制列表。如果为None，默认使用 range(150, 410, 10)
+        
+    Returns:
+        list: 包含不同时间限制下最优方案的列表
+    """
+    if time_limits is None:
+        # 默认时间限制列表
+        time_limits = range(150, 410, 10)
+    
+    scenarios = []
+    for time_limit in time_limits:
+        scenario = calculate_scenario_3(problem, time_limit)
+        if scenario:
+            scenarios.append(scenario)
+    
+    return scenarios
 
 
 
@@ -209,8 +252,8 @@ def save_results_to_file(problem=2):
             tug_reliability = TUG_RELIABILITY_P2
             rocket_reliability = ROCKET_RELIABILITY_P2
         
-        # 遍历不同的太空电梯比例（从0%到100%，步长2%）
-        for elevator_ratio in range(0, 101, 2):
+        # 遍历不同的太空电梯比例（从0%到100%，步长1%）
+        for elevator_ratio in range(0, 101, 1):
             elevator_ratio = elevator_ratio / 100
             rocket_ratio = 1 - elevator_ratio
             
@@ -265,6 +308,22 @@ def save_results_to_file(problem=2):
             f.write(f"传统火箭比例: {rocket_ratio*100}%\n")
             f.write(f"所需时间: {years_needed} 年\n")
             f.write(f"总成本: {total_cost}\n")
+            f.write("\n")
+    
+    # 保存不同时间限制下的最优组合方案
+    time_limit_file = os.path.join(problem_dir, 'time_limit_analysis.txt')
+    with open(time_limit_file, 'w') as f:
+        f.write(f"=== 不同时间限制下的最优组合方案分析 (Problem {problem}) ===\n")
+        
+        # 计算不同时间限制下的最优方案
+        time_limit_scenarios = calculate_combined_scenarios_by_time_limit(problem)
+        
+        for scenario in time_limit_scenarios:
+            f.write(f"时间限制: {scenario.get('time_limit', 'N/A')} 年\n")
+            f.write(f"实际所需时间: {scenario['years_needed']} 年\n")
+            f.write(f"太空电梯比例: {scenario['elevator_ratio']*100}%\n")
+            f.write(f"传统火箭比例: {scenario['rocket_ratio']*100}%\n")
+            f.write(f"总成本: {scenario['total_cost']}\n")
             f.write("\n")
 
 # 主函数

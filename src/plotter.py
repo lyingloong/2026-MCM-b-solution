@@ -98,6 +98,56 @@ def read_ratio_analysis(problem=2):
             costs.append(current_ratio['cost'])
     return ratios, years, costs
 
+# 读取不同时间限制下的最优方案结果
+def read_time_limit_analysis(problem=2):
+    """读取不同时间限制下的最优方案结果
+    
+    Args:
+        problem (int, optional): 问题编号，1表示Problem 1，2表示Problem 2。默认为2
+        
+    Returns:
+        tuple: 包含时间限制、实际时间、成本、太空电梯比例和传统火箭比例的元组
+    """
+    time_limits = []
+    actual_years = []
+    costs = []
+    elevator_ratios = []
+    rocket_ratios = []
+    
+    results_dir = get_results_dir(problem)
+    time_limit_file = os.path.join(results_dir, 'time_limit_analysis.txt')
+    
+    with open(time_limit_file, 'r') as f:
+        lines = f.readlines()
+        current_scenario = {}
+        for line in lines:
+            line = line.strip()
+            if line.startswith('时间限制:'):
+                if current_scenario:
+                    time_limits.append(current_scenario['time_limit'])
+                    actual_years.append(current_scenario['actual_years'])
+                    costs.append(current_scenario['cost'])
+                    elevator_ratios.append(current_scenario['elevator_ratio'])
+                    rocket_ratios.append(current_scenario['rocket_ratio'])
+                    current_scenario = {}
+                current_scenario['time_limit'] = float(line.split('时间限制: ')[1].split(' 年')[0])
+            elif line.startswith('实际所需时间:'):
+                current_scenario['actual_years'] = float(line.split('实际所需时间: ')[1].split(' 年')[0])
+            elif line.startswith('太空电梯比例:'):
+                current_scenario['elevator_ratio'] = float(line.split('太空电梯比例: ')[1].split('%')[0]) / 100
+            elif line.startswith('传统火箭比例:'):
+                current_scenario['rocket_ratio'] = float(line.split('传统火箭比例: ')[1].split('%')[0]) / 100
+            elif line.startswith('总成本:'):
+                current_scenario['cost'] = float(line.split('总成本: ')[1])
+        if current_scenario:
+            time_limits.append(current_scenario['time_limit'])
+            actual_years.append(current_scenario['actual_years'])
+            costs.append(current_scenario['cost'])
+            elevator_ratios.append(current_scenario['elevator_ratio'])
+            rocket_ratios.append(current_scenario['rocket_ratio'])
+    
+    return time_limits, actual_years, costs, elevator_ratios, rocket_ratios
+
 # 绘制场景对比图
 def plot_scenario_comparison(problem=2):
     """Plot cost and time comparison for all scenarios
@@ -185,11 +235,61 @@ def main():
     print("=== Problem 1: 100%可靠性 ===")
     plot_scenario_comparison(1)
     plot_ratio_analysis(1)
+    plot_time_limit_analysis(1)
     
     # 运行 Problem 2（当前可靠性）的绘图
     print("\n=== Problem 2: 当前可靠性 ===")
     plot_scenario_comparison(2)
     plot_ratio_analysis(2)
+    plot_time_limit_analysis(2)
+
+# 绘制不同时间限制下的最优方案分析图
+def plot_time_limit_analysis(problem=2):
+    """Plot optimal solutions under different time limits
+    
+    Args:
+        problem (int, optional): 问题编号，1表示Problem 1，2表示Problem 2。默认为2
+    """
+    time_limits, actual_years, costs, elevator_ratios, rocket_ratios = read_time_limit_analysis(problem)
+    
+    # Convert cost to billions of dollars
+    costs_billion = [c / 1e9 for c in costs]
+    # Convert ratios to percentage
+    elevator_ratios_percent = [r * 100 for r in elevator_ratios]
+    rocket_ratios_percent = [r * 100 for r in rocket_ratios]
+    
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 6))
+    
+    # Plot cost variation with time limit
+    ax1.plot(time_limits, costs_billion, marker='o', color='blue')
+    ax1.set_title('Cost Variation with Time Limit')
+    ax1.set_xlabel('Time Limit (Years)')
+    ax1.set_ylabel('Total Cost (Billion USD)')
+    ax1.grid(True)
+    
+    # Plot actual time vs time limit
+    ax2.plot(time_limits, actual_years, marker='o', color='green')
+    ax2.plot(time_limits, time_limits, linestyle='--', color='red', label='Time Limit')
+    ax2.set_title('Actual Time vs Time Limit')
+    ax2.set_xlabel('Time Limit (Years)')
+    ax2.set_ylabel('Actual Time (Years)')
+    ax2.legend()
+    ax2.grid(True)
+    
+    # Plot ratio variation with time limit
+    ax3.plot(time_limits, elevator_ratios_percent, marker='o', color='blue', label='Space Elevator')
+    ax3.plot(time_limits, rocket_ratios_percent, marker='o', color='orange', label='Traditional Rockets')
+    ax3.set_title('Ratio Variation with Time Limit')
+    ax3.set_xlabel('Time Limit (Years)')
+    ax3.set_ylabel('Ratio (%)')
+    ax3.legend()
+    ax3.grid(True)
+    
+    plt.tight_layout()
+    results_dir = get_results_dir(problem)
+    output_file = os.path.join(results_dir, 'time_limit_analysis.png')
+    plt.savefig(output_file)
+    print(f'Time limit analysis chart saved to {output_file}')
 
 if __name__ == "__main__":
     main()
