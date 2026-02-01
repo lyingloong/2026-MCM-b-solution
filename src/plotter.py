@@ -3,7 +3,7 @@ plotter for main_model
 """
 import matplotlib.pyplot as plt
 import numpy as np
-
+from scipy.interpolate import interp1d
 import os
 
 # 获取结果目录的绝对路径
@@ -221,42 +221,139 @@ def plot_ratio_analysis(problem=2):
         problem (int, optional): 问题编号，1表示Problem 1，2表示Problem 2。默认为2
     """
     ratios, years, costs = read_ratio_analysis(problem)
-    
-    # Convert to percentage
+    # 原始数据转换：比例转百分比，成本转十亿美元
     ratio_percent = [r * 100 for r in ratios]
-    # Convert cost to billions of dollars
     costs_billion = [c / 1e9 for c in costs]
     
-    fig, ax1 = plt.subplots(figsize=(12, 6))
-    
-    # Cost variation with ratio (left y-axis)
-    color = 'tab:blue'
-    ax1.set_xlabel('Space Elevator Ratio (%)')
-    ax1.set_ylabel('Total Cost (Billion USD)', color=color)
-    ax1.plot(ratio_percent, costs_billion, 'o-', color=color, label='Total Cost')
-    ax1.tick_params(axis='y', labelcolor=color)
+    # ===================== 1. 绘制原有双轴折线图（保留原逻辑）=====================
+    fig1, ax1 = plt.subplots(figsize=(12, 6))
+    # 成本曲线（左轴）
+    color_cost = '#1f77b4'
+    ax1.set_xlabel('Space Elevator Ratio (%)', fontsize=12)
+    ax1.set_ylabel('Total Cost (Billion USD)', color=color_cost, fontsize=12)
+    ax1.plot(ratio_percent, costs_billion, 'o-', color=color_cost, label='Total Cost', linewidth=2, markersize=6)
+    ax1.tick_params(axis='y', labelcolor=color_cost, labelsize=11)
     ax1.grid(True, alpha=0.3)
-    
-    # Time variation with ratio (right y-axis)
+    # 时间曲线（右轴）
+    color_time = '#2ca02c'
     ax2 = ax1.twinx()
-    color = 'tab:green'
-    ax2.set_ylabel('Time Required (Years)', color=color)
-    ax2.plot(ratio_percent, years, 's-', color=color, label='Time Required')
-    ax2.tick_params(axis='y', labelcolor=color)
-    
-    # Title and legend
-    plt.title('Cost and Time Variation with Space Elevator Ratio')
-    
-    # Combine legends
+    ax2.set_ylabel('Time Required (Years)', color=color_time, fontsize=12)
+    ax2.plot(ratio_percent, years, 's-', color=color_time, label='Time Required', linewidth=2, markersize=6)
+    ax2.tick_params(axis='y', labelcolor=color_time, labelsize=11)
+    # 标题和图例
+    fig1.suptitle(f'Cost & Time vs Space Elevator Ratio (Line Chart) - Problem {problem}', fontsize=14, fontweight='bold')
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
-    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper center')
-    
-    plt.tight_layout()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper center', fontsize=11)
+    # 保存折线图
     results_dir = get_results_dir(problem)
-    output_file = os.path.join(results_dir, 'ratio_analysis.png')
-    plt.savefig(output_file)
-    print(f'Ratio analysis chart saved to {output_file}')
+    line_file = os.path.join(results_dir, 'ratio_analysis_line.png')
+    plt.tight_layout()
+    plt.savefig(line_file, bbox_inches='tight', dpi=150)
+    print(f'Ratio analysis line chart saved to {line_file}')
+    plt.close(fig1)
+
+    # ===================== 2. 绘制10%步长双组柱形图（核心新增）=====================
+    # 2.1 生成10%步长的目标比例（0,10,20,...,100）
+    target_ratios = np.arange(0, 101, 10)  # 严格10%步长
+    # 2.2 插值匹配原始数据到目标比例（保证每个步长有对应成本/时间）
+    f_cost = interp1d(ratio_percent, costs_billion, kind='linear', fill_value='extrapolate')
+    f_time = interp1d(ratio_percent, years, kind='linear', fill_value='extrapolate')
+    target_costs = f_cost(target_ratios)  # 目标比例对应的成本
+    target_years = f_time(target_ratios)  # 目标比例对应的时间
+
+    # 2.3 绘制双组柱形图
+    fig2, ax = plt.subplots(figsize=(14, 7))
+    # 柱形参数：宽度、偏移量（避免重叠）
+    bar_width = 3.5  # 柱形宽度，适配10%步长
+    x1 = target_ratios - bar_width/2  # 成本柱形x坐标
+    x2 = target_ratios + bar_width/2  # 时间柱形x坐标
+    # 定义配色（论文级，与折线图统一）
+    color_cost_bar = '#1f77b4'
+    color_time_bar = '#2ca02c'
+
+    # 绘制成本柱形
+    bars1 = ax.bar(x1, target_costs, width=bar_width, label='Total Cost (Billion USD)',
+                   color=color_cost_bar, edgecolor='black', alpha=0.8)
+    # 绘制时间柱形（次坐标轴，因为成本和时间量纲不同）
+    ax_twin = ax.twinx()
+    bars2 = ax_twin.bar(x2, target_years, width=bar_width, label='Time Required (Years)',
+                        color=color_time_bar, edgecolor='black', alpha=0.8)
+
+    # 2.4 图表样式设置
+    # 主坐标轴（成本）
+    ax.set_xlabel('Space Elevator Ratio (%)', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Total Cost (Billion USD)', fontsize=12, fontweight='bold', color=color_cost_bar)
+    ax.tick_params(axis='x', labelsize=11)
+    ax.tick_params(axis='y', labelcolor=color_cost_bar, labelsize=11)
+    ax.set_xticks(target_ratios)  # x轴刻度严格匹配10%步长
+    ax.grid(axis='y', alpha=0.3)
+    # 次坐标轴（时间）
+    ax_twin.set_ylabel('Time Required (Years)', fontsize=12, fontweight='bold', color=color_time_bar)
+    ax_twin.tick_params(axis='y', labelcolor=color_time_bar, labelsize=11)
+    # 标题
+    fig2.suptitle(f'Cost & Time vs Space Elevator Ratio (Bar Chart, 10% Step) - Problem {problem}',
+                  fontsize=14, fontweight='bold', y=1.02)
+    # 合并图例
+    lines1, labels1 = ax.get_legend_handles_labels()
+    lines2, labels2 = ax_twin.get_legend_handles_labels()
+    ax.legend(lines1 + lines2, labels1 + labels2, loc='upper center', fontsize=11, ncol=2)
+
+    # 2.5 添加数据标签（柱形顶部显示数值，更直观）
+    # 成本标签
+    for bar, val in zip(bars1, target_costs):
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height + max(target_costs)*0.01,
+                f'{val:.2f}', ha='center', va='bottom', fontsize=9, fontweight='bold')
+    # 时间标签
+    for bar, val in zip(bars2, target_years):
+        height = bar.get_height()
+        ax_twin.text(bar.get_x() + bar.get_width()/2., height + max(target_years)*0.02,
+                     f'{val:.1f}', ha='center', va='bottom', fontsize=9, fontweight='bold')
+
+    # 2.6 保存柱形图
+    bar_file = os.path.join(results_dir, 'ratio_analysis_bar_10step.png')
+    plt.tight_layout()
+    plt.savefig(bar_file, bbox_inches='tight', dpi=150)
+    print(f'Ratio analysis bar chart (10% step) saved to {bar_file}')
+    plt.close(fig2)
+    # ratios, years, costs = read_ratio_analysis(problem)
+    
+    # # Convert to percentage
+    # ratio_percent = [r * 100 for r in ratios]
+    # # Convert cost to billions of dollars
+    # costs_billion = [c / 1e9 for c in costs]
+    
+    # fig, ax1 = plt.subplots(figsize=(12, 6))
+    
+    # # Cost variation with ratio (left y-axis)
+    # color = 'tab:blue'
+    # ax1.set_xlabel('Space Elevator Ratio (%)')
+    # ax1.set_ylabel('Total Cost (Billion USD)', color=color)
+    # ax1.plot(ratio_percent, costs_billion, 'o-', color=color, label='Total Cost')
+    # ax1.tick_params(axis='y', labelcolor=color)
+    # ax1.grid(True, alpha=0.3)
+    
+    # # Time variation with ratio (right y-axis)
+    # ax2 = ax1.twinx()
+    # color = 'tab:green'
+    # ax2.set_ylabel('Time Required (Years)', color=color)
+    # ax2.plot(ratio_percent, years, 's-', color=color, label='Time Required')
+    # ax2.tick_params(axis='y', labelcolor=color)
+    
+    # # Title and legend
+    # plt.title('Cost and Time Variation with Space Elevator Ratio')
+    
+    # # Combine legends
+    # lines1, labels1 = ax1.get_legend_handles_labels()
+    # lines2, labels2 = ax2.get_legend_handles_labels()
+    # ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper center')
+    
+    # plt.tight_layout()
+    # results_dir = get_results_dir(problem)
+    # output_file = os.path.join(results_dir, 'ratio_analysis.png')
+    # plt.savefig(output_file)
+    # print(f'Ratio analysis chart saved to {output_file}')
 
 # Main function
 def main():
