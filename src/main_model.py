@@ -14,19 +14,28 @@ def calculate_scenario_1(problem=2):
     Returns:
         dict: 包含场景名称、所需时间、完成年份、总成本和年运输能力的字典
     """
-    # 根据问题编号选择成本设置
+    # 根据问题编号选择可靠性设置
     if problem == 1:
-        # Problem 1: 使用100%可靠性计算的成本
+        # Problem 1: 使用100%可靠性
+        elevator_reliability = ELEVATOR_RELIABILITY_P1
+        tug_reliability = TUG_RELIABILITY_P1
         cost_elevator_per = COST_ELEVATOR_PER_P1
     else:  # problem == 2
-        # Problem 2: 使用当前可靠性计算的成本
+        # Problem 2: 使用当前可靠性
+        elevator_reliability = ELEVATOR_RELIABILITY_P2
+        tug_reliability = TUG_RELIABILITY_P2
         cost_elevator_per = COST_ELEVATOR_PER_P2
     
-    # 计算太空电梯系统的总年运输能力
-    # 总年运输能力 = 银河港数量 * 每个银河港年运输能力
-    total_annual_capacity = GALACTIC_HARBORS * ELEVATOR_ANNUAL_CAPACITY
-    # 计算所需时间：总材料需求除以总年运输能力，向上取整
-    years_needed = np.ceil(TOTAL_MATERIAL / total_annual_capacity)
+    # 计算太空电梯系统的理论年运输能力
+    # 理论年运输能力 = 银河港数量 * 每个银河港年运输能力
+    theoretical_annual_capacity = GALACTIC_HARBORS * ELEVATOR_ANNUAL_CAPACITY
+    
+    # 计算有效年运输能力：考虑可靠性因素
+    # 有效年运输能力 = 理论年运输能力 * 太空电梯可靠性 * 摆渡火箭可靠性
+    effective_annual_capacity = theoretical_annual_capacity * elevator_reliability * tug_reliability
+    
+    # 计算所需时间：总材料需求除以有效年运输能力，向上取整
+    years_needed = np.ceil(TOTAL_MATERIAL / effective_annual_capacity)
     # 计算总成本：总材料需求乘以单位有效载荷成本
     total_cost = TOTAL_MATERIAL * cost_elevator_per
     # 计算完成年份
@@ -37,7 +46,7 @@ def calculate_scenario_1(problem=2):
         "years_needed": years_needed,
         "completion_year": completion_year,
         "total_cost": total_cost,
-        "annual_capacity": total_annual_capacity
+        "annual_capacity": effective_annual_capacity
     }
 
 def calculate_scenario_2(problem=2):
@@ -51,19 +60,26 @@ def calculate_scenario_2(problem=2):
     Returns:
         dict: 包含场景名称、所需时间、完成年份、总成本和年运输能力的字典
     """
-    # 根据问题编号选择成本设置
+    # 根据问题编号选择可靠性设置
     if problem == 1:
-        # Problem 1: 使用100%可靠性计算的成本
+        # Problem 1: 使用100%可靠性
+        rocket_reliability = ROCKET_RELIABILITY_P1
         cost_rocket_per = COST_ROCKET_PER_P1
     else:  # problem == 2
-        # Problem 2: 使用当前可靠性计算的成本
+        # Problem 2: 使用当前可靠性
+        rocket_reliability = ROCKET_RELIABILITY_P2
         cost_rocket_per = COST_ROCKET_PER_P2
     
-    # 计算火箭系统的总年运输能力
-    # 总年运输能力 = 发射场数量 * 每个发射场年发射次数 * 平均有效载荷
-    total_annual_capacity = ROCKET_LAUNCH_SITES * ROCKET_LAUNCHES_PER_YEAR_PER_SITE * ROCKET_PAYLOAD_AVG
-    # 计算所需时间：总材料需求除以总年运输能力，向上取整
-    years_needed = np.ceil(TOTAL_MATERIAL / total_annual_capacity)
+    # 计算火箭系统的理论年运输能力
+    # 理论年运输能力 = 发射场数量 * 每个发射场年发射次数 * 平均有效载荷
+    theoretical_annual_capacity = ROCKET_LAUNCH_SITES * ROCKET_LAUNCHES_PER_YEAR_PER_SITE * ROCKET_PAYLOAD_AVG
+    
+    # 计算有效年运输能力：考虑可靠性因素
+    # 有效年运输能力 = 理论年运输能力 * 火箭可靠性
+    effective_annual_capacity = theoretical_annual_capacity * rocket_reliability
+    
+    # 计算所需时间：总材料需求除以有效年运输能力，向上取整
+    years_needed = np.ceil(TOTAL_MATERIAL / effective_annual_capacity)
     # 计算总成本：总材料需求乘以单位有效载荷成本
     total_cost = TOTAL_MATERIAL * cost_rocket_per
     # 计算完成年份
@@ -74,7 +90,7 @@ def calculate_scenario_2(problem=2):
         "years_needed": years_needed,
         "completion_year": completion_year,
         "total_cost": total_cost,
-        "annual_capacity": total_annual_capacity
+        "annual_capacity": effective_annual_capacity
     }
 
 def calculate_scenario_3(problem=2, time_limit=None):
@@ -174,10 +190,12 @@ def calculate_combined_ratio_analysis(problem=2):
         
         # 太空电梯计算
         if elevator_ratio > 0:
-            # 太空电梯系统年运输能力
-            elevator_annual_capacity = GALACTIC_HARBORS * ELEVATOR_ANNUAL_CAPACITY
+            # 太空电梯系统理论年运输能力
+            theoretical_elevator_capacity = GALACTIC_HARBORS * ELEVATOR_ANNUAL_CAPACITY
+            # 太空电梯系统有效年运输能力：考虑可靠性因素
+            effective_elevator_capacity = theoretical_elevator_capacity * elevator_reliability * tug_reliability
             # 计算太空电梯部分所需时间，向上取整
-            elevator_years = np.ceil(elevator_material / elevator_annual_capacity)
+            elevator_years = np.ceil(elevator_material / effective_elevator_capacity)
             # 根据问题编号计算太空电梯部分成本
             if problem == 1:
                 # Problem 1: 100%可靠性
@@ -192,10 +210,12 @@ def calculate_combined_ratio_analysis(problem=2):
         
         # 火箭计算
         if rocket_ratio > 0:
-            # 火箭系统年运输能力
-            rocket_annual_capacity = ROCKET_LAUNCH_SITES * ROCKET_LAUNCHES_PER_YEAR_PER_SITE * ROCKET_PAYLOAD_AVG
+            # 火箭系统理论年运输能力
+            theoretical_rocket_capacity = ROCKET_LAUNCH_SITES * ROCKET_LAUNCHES_PER_YEAR_PER_SITE * ROCKET_PAYLOAD_AVG
+            # 火箭系统有效年运输能力：考虑可靠性因素
+            effective_rocket_capacity = theoretical_rocket_capacity * rocket_reliability
             # 计算火箭部分所需时间，向上取整
-            rocket_years = np.ceil(rocket_material / rocket_annual_capacity)
+            rocket_years = np.ceil(rocket_material / effective_rocket_capacity)
             # 根据问题编号计算火箭部分成本
             if problem == 1:
                 # Problem 1: 100%可靠性
