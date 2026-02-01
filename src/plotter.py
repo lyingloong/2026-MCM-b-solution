@@ -355,6 +355,218 @@ def plot_ratio_analysis(problem=2):
     # plt.savefig(output_file)
     # print(f'Ratio analysis chart saved to {output_file}')
 
+# 绘制Problem 1和Problem 2的对比图
+def plot_reliability_comparison():
+    """Plot comparison between Problem 1 (100% reliability) and Problem 2 (current reliability)
+    
+    目的：显示两份数据的区别，说明不可靠扰动对方案影响不大
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 转换为百分比和十亿美元
+    ratio_percent_p1 = [r * 100 for r in ratios_p1]
+    ratio_percent_p2 = [r * 100 for r in ratios_p2]
+    costs_billion_p1 = [c / 1e9 for c in costs_p1]
+    costs_billion_p2 = [c / 1e9 for c in costs_p2]
+    
+    # 计算差异
+    cost_diff = [abs(costs_billion_p1[i] - costs_billion_p2[i]) for i in range(len(costs_billion_p1))]
+    year_diff = [abs(years_p1[i] - years_p2[i]) for i in range(len(years_p1))]
+    
+    # 创建对比图表
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(18, 10))
+    
+    # 设置整体字体
+    plt.rcParams.update({'font.size': 12})
+    
+    # 成本对比图
+    ax1.plot(ratio_percent_p1, costs_billion_p1, 'o-', color='#1f77b4', alpha=0.7, label='Problem 1 (100% Reliability)')
+    ax1.plot(ratio_percent_p2, costs_billion_p2, 'o-', color='#2ca02c', alpha=0.7, label='Problem 2 (Current Reliability)')
+    ax1.set_title('Cost Comparison: Problem 1 vs Problem 2', fontsize=14, fontweight='bold')
+    ax1.set_xlabel('Space Elevator Ratio (%)', fontsize=12)
+    ax1.set_ylabel('Total Cost (Billion USD)', fontsize=12)
+    ax1.legend(loc='upper right')
+    ax1.grid(True, alpha=0.3)
+    
+    # 时间对比图
+    ax2.plot(ratio_percent_p1, years_p1, 's-', color='#1f77b4', alpha=0.7, label='Problem 1 (100% Reliability)')
+    ax2.plot(ratio_percent_p2, years_p2, 's-', color='#2ca02c', alpha=0.7, label='Problem 2 (Current Reliability)')
+    ax2.set_title('Time Comparison: Problem 1 vs Problem 2', fontsize=14, fontweight='bold')
+    ax2.set_xlabel('Space Elevator Ratio (%)', fontsize=12)
+    ax2.set_ylabel('Time Required (Years)', fontsize=12)
+    ax2.legend(loc='upper right')
+    ax2.grid(True, alpha=0.3)
+    
+    # 添加整体标题和说明
+    fig.suptitle('Reliability Impact Analysis: 100% vs Current Reliability', fontsize=16, fontweight='bold', y=1.02)
+    fig.text(0.5, 0.02, 'Note: Small differences indicate minimal impact of reliability variations', 
+             ha='center', fontsize=11, style='italic', color='#666666')
+    
+    plt.tight_layout()
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_comparison.png')
+    plt.savefig(output_file, dpi=150, bbox_inches='tight')
+    print(f'Reliability comparison chart saved to {output_file}')
+
+# 绘制差异分析图
+def plot_reliability_difference_analysis():
+    """Plot absolute and relative differences between Problem 1 and Problem 2
+    
+    目的：显示两份数据的差异，说明不可靠扰动对方案影响不大
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 转换为百分比和十亿美元
+    ratio_percent = [r * 100 for r in ratios_p1]
+    costs_billion_p1 = [c / 1e9 for c in costs_p1]
+    costs_billion_p2 = [c / 1e9 for c in costs_p2]
+    
+    # 计算绝对差异
+    cost_diff = [abs(costs_billion_p1[i] - costs_billion_p2[i]) for i in range(len(costs_billion_p1))]
+    year_diff = [abs(years_p1[i] - years_p2[i]) for i in range(len(years_p1))]
+    
+    # 计算相对差异（百分比）
+    cost_pct_diff = [((costs_billion_p2[i] - costs_billion_p1[i]) / costs_billion_p1[i]) * 100 for i in range(len(costs_billion_p1))]
+    
+    # 创建差异分析图表
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(18, 14))
+    
+    # 设置整体字体
+    plt.rcParams.update({'font.size': 12})
+    
+    # 成本绝对差异图
+    ax1.plot(ratio_percent, cost_diff, 'o-', color='#ff7f0e', linewidth=2, markersize=6)
+    ax1.set_title('Absolute Cost Difference Between Problem 1 and Problem 2', fontsize=14, fontweight='bold')
+    ax1.set_xlabel('Space Elevator Ratio (%)', fontsize=12)
+    ax1.set_ylabel('Cost Difference (Billion USD)', fontsize=12)
+    ax1.grid(True, alpha=0.3)
+    
+    # 时间绝对差异图
+    ax2.plot(ratio_percent, year_diff, 's-', color='#d62728', linewidth=2, markersize=6)
+    ax2.set_title('Absolute Time Difference Between Problem 1 and Problem 2', fontsize=14, fontweight='bold')
+    ax2.set_xlabel('Space Elevator Ratio (%)', fontsize=12)
+    ax2.set_ylabel('Time Difference (Years)', fontsize=12)
+    ax2.grid(True, alpha=0.3)
+    
+    # 成本相对差异图（百分比）
+    ax3.plot(ratio_percent, cost_pct_diff, '^-', color='#9467bd', linewidth=2, markersize=6)
+    ax3.axhline(y=0, color='red', linestyle='--', alpha=0.5)
+    ax3.set_title('Relative Cost Difference (Percentage Change)', fontsize=14, fontweight='bold')
+    ax3.set_xlabel('Space Elevator Ratio (%)', fontsize=12)
+    ax3.set_ylabel('Cost Difference (%)', fontsize=12)
+    ax3.grid(True, alpha=0.3)
+    
+    # 添加整体标题和说明
+    fig.suptitle('Reliability Impact Analysis: Difference Between 100% and Current Reliability', 
+                  fontsize=16, fontweight='bold', y=1.02)
+    fig.text(0.5, 0.02, 'Note: Minimal differences indicate that reliability variations have negligible impact on the solution', 
+             ha='center', fontsize=11, style='italic', color='#666666')
+    
+    plt.tight_layout()
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_difference_analysis.png')
+    plt.savefig(output_file, dpi=150, bbox_inches='tight')
+    print(f'Reliability difference analysis chart saved to {output_file}')
+
+# 绘制统计摘要图
+def plot_reliability_statistics():
+    """Plot statistical summary comparing Problem 1 and Problem 2
+    
+    目的：显示统计信息，说明不可靠扰动对方案影响不大
+    """
+    # 读取两份数据
+    ratios_p1, years_p1, costs_p1 = read_ratio_analysis(1)
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    
+    # 转换为十亿美元
+    costs_billion_p1 = [c / 1e9 for c in costs_p1]
+    costs_billion_p2 = [c / 1e9 for c in costs_p2]
+    
+    # 计算差异
+    cost_diff = [abs(costs_billion_p1[i] - costs_billion_p2[i]) for i in range(len(costs_billion_p1))]
+    year_diff = [abs(years_p1[i] - years_p2[i]) for i in range(len(years_p1))]
+    
+    # 计算统计信息
+    stats = {
+        'Cost': {
+            'Max Difference': max(cost_diff),
+            'Min Difference': min(cost_diff),
+            'Mean Difference': np.mean(cost_diff),
+            'Std Difference': np.std(cost_diff),
+            'Max Percentage': max(cost_diff) / np.mean(costs_billion_p1) * 100
+        },
+        'Time': {
+            'Max Difference': max(year_diff),
+            'Min Difference': min(year_diff),
+            'Mean Difference': np.mean(year_diff),
+            'Std Difference': np.std(year_diff),
+            'Max Percentage': max(year_diff) / np.mean(years_p1) * 100
+        }
+    }
+    
+    # 创建统计摘要图表
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 7))
+    
+    # 设置整体字体
+    plt.rcParams.update({'font.size': 12})
+    
+    # 成本统计图
+    categories = ['Max Diff', 'Min Diff', 'Mean Diff', 'Std Dev', 'Max %']
+    cost_values = [stats['Cost']['Max Difference'], stats['Cost']['Min Difference'], 
+                   stats['Cost']['Mean Difference'], stats['Cost']['Std Difference'], 
+                   stats['Cost']['Max Percentage']]
+    colors_cost = ['#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b']
+    
+    bars1 = ax1.bar(categories, cost_values, color=colors_cost, alpha=0.8, edgecolor='black')
+    ax1.set_title('Cost Statistics: Problem 1 vs Problem 2', fontsize=14, fontweight='bold')
+    ax1.set_ylabel('Value', fontsize=12)
+    ax1.grid(axis='y', alpha=0.3)
+    
+    # 添加数据标签
+    for bar, val in zip(bars1, cost_values):
+        height = bar.get_height()
+        ax1.text(bar.get_x() + bar.get_width()/2., height + max(cost_values)*0.02,
+                f'{val:.2f}', ha='center', va='bottom', fontsize=10, fontweight='bold')
+    
+    # 时间统计图
+    time_values = [stats['Time']['Max Difference'], stats['Time']['Min Difference'], 
+                  stats['Time']['Mean Difference'], stats['Time']['Std Difference'], 
+                  stats['Time']['Max Percentage']]
+    colors_time = ['#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b']
+    
+    bars2 = ax2.bar(categories, time_values, color=colors_time, alpha=0.8, edgecolor='black')
+    ax2.set_title('Time Statistics: Problem 1 vs Problem 2', fontsize=14, fontweight='bold')
+    ax2.set_ylabel('Value', fontsize=12)
+    ax2.grid(axis='y', alpha=0.3)
+    
+    # 添加数据标签
+    for bar, val in zip(bars2, time_values):
+        height = bar.get_height()
+        ax2.text(bar.get_x() + bar.get_width()/2., height + max(time_values)*0.02,
+                f'{val:.2f}', ha='center', va='bottom', fontsize=10, fontweight='bold')
+    
+    # 添加整体标题和说明
+    fig.suptitle('Reliability Impact Analysis: Statistical Summary', 
+                  fontsize=16, fontweight='bold', y=1.02)
+    fig.text(0.5, 0.02, 'Note: Small statistical differences confirm minimal impact of reliability variations', 
+             ha='center', fontsize=11, style='italic', color='#666666')
+    
+    plt.tight_layout()
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'reliability_statistics.png')
+    plt.savefig(output_file, dpi=150, bbox_inches='tight')
+    print(f'Reliability statistics chart saved to {output_file}')
+
 # Main function
 def main():
     """Run all plotting functions for both problems"""
@@ -369,6 +581,12 @@ def main():
     plot_scenario_comparison(2)
     plot_ratio_analysis(2)
     plot_time_limit_analysis(2)
+    
+    # 绘制可靠性对比图
+    print("\n=== Reliability Comparison ===")
+    plot_reliability_comparison()
+    plot_reliability_difference_analysis()
+    plot_reliability_statistics()
 
 # 绘制不同时间限制下的最优方案分析图
 def plot_time_limit_analysis(problem=2):
