@@ -14,6 +14,7 @@ This repository contains the solution for the 2026 MCM Problem B, which focuses 
   - `space_launch_data_2000_2025.csv`: Processed data based on the original dataset
 - `models/`: Contains models and algorithms implementation
 - `results/`: Contains output results and visualizations
+- `figures/`: Generated figures for the analysis
 - `src/`: Main source code
   - `model.py`: Core model implementation for scenario analysis
   - `plotter.py`: Chart generation for visualizing results

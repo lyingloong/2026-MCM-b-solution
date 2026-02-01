@@ -54,7 +54,7 @@ ROCKET_PAYLOAD_MAX = 150  # 火箭最大有效载荷（吨）
 ROCKET_PAYLOAD_AVG = (ROCKET_PAYLOAD_MIN + ROCKET_PAYLOAD_MAX) / 2  # 平均有效载荷
 ROCKET_COST_PER_LAUNCH = 4_000_000_000  # 单次发射成本（美元）
 ROCKET_THETA = 0.4 # 可回收火箭消耗系数
-ROCKET_LAUNCHES_PER_YEAR_PER_SITE = 2000  # 每个发射场每年发射次数
+ROCKET_LAUNCHES_PER_YEAR_PER_SITE = 200  # 每个发射场每年发射次数
 ROCKET_N_G = 20 # 复用次数
 # 计算单位有效载荷成本：考虑发射成本、消耗系数、复用次数和可靠性
 # Problem 1 成本计算（100%可靠性）
