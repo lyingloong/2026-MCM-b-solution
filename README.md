@@ -1,9 +1,9 @@
 # 2026 MCM Problem B: Creating a Moon Colony Using a Space Elevator System
 
 ## Team Information
-- Hao Wang
-- Renhao Li
-- Wenchao Yu
+- [Hao Wang](https://github.com/lyingloong) ![Hao Wang](https://github.com/lyingloong.png?size=20)
+- [Renhao Li](https://github.com/LiRenHao) ![Renhao Li](https://github.com/LiRenHao.png?size=20)
+- [Wenchao Yu](https://github.com/ANT181603) ![Wenchao Yu](https://github.com/ANT181603.png?size=20)
 
 ## Project Overview
 This repository contains the solution for the 2026 MCM Problem B, which focuses on creating a moon colony using a space elevator system. The analysis includes three scenarios: using only space elevators, using only traditional rockets, and a combined approach with optimal ratio.
