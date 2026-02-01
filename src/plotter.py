@@ -56,39 +56,7 @@ def read_scenario_analysis(problem=2):
             scenarios.append(current_scenario)
     return scenarios
 
-# 读取系统故障影响结果
-def read_reliability_impact(problem=2):
-    """读取系统故障影响结果
-    
-    Args:
-        problem (int, optional): 问题编号，1表示Problem 1，2表示Problem 2。默认为2
-        
-    Returns:
-        list: 系统故障影响结果列表
-    """
-    scenarios = []
-    results_dir = get_results_dir(problem)
-    reliability_file = os.path.join(results_dir, 'reliability_impact.txt')
-    
-    with open(reliability_file, 'r') as f:
-        lines = f.readlines()
-        current_scenario = {}
-        for line in lines:
-            line = line.strip()
-            if line.startswith('场景:'):
-                if current_scenario:
-                    scenarios.append(current_scenario)
-                    current_scenario = {}
-                current_scenario['name'] = line.split('场景: ')[1]
-            elif line.startswith('所需时间:'):
-                current_scenario['years'] = float(line.split('所需时间: ')[1].split(' 年')[0])
-            elif line.startswith('完成年份:'):
-                current_scenario['completion_year'] = int(float(line.split('完成年份: ')[1]))
-            elif line.startswith('总成本:'):
-                current_scenario['cost'] = float(line.split('总成本: ')[1])
-        if current_scenario:
-            scenarios.append(current_scenario)
-    return scenarios
+
 
 # 读取比例分析结果
 def read_ratio_analysis(problem=2):
@@ -163,54 +131,7 @@ def plot_scenario_comparison(problem=2):
     plt.savefig(output_file)
     print(f'Scenario comparison chart saved to {output_file}')
 
-# 绘制系统故障影响对比图
-def plot_reliability_impact(problem=2):
-    """Plot impact of system failures on each scenario
-    
-    Args:
-        problem (int, optional): 问题编号，1表示Problem 1，2表示Problem 2。默认为2
-    """
-    normal_scenarios = read_scenario_analysis(problem)
-    impacted_scenarios = read_reliability_impact(problem)
-    
-    # Create mapping for easy comparison
-    normal_map = {scenario['name']: scenario for scenario in normal_scenarios}
-    impacted_map = {scenario['name']: scenario for scenario in impacted_scenarios}
-    
-    names = list(normal_map.keys())
-    normal_costs = [normal_map[name]['cost'] / 1e9 for name in names]  # Convert to billions of dollars
-    impacted_costs = [impacted_map[name]['cost'] / 1e9 for name in names]
-    normal_years = [normal_map[name]['years'] for name in names]
-    impacted_years = [impacted_map[name]['years'] for name in names]
-    
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
-    
-    # Cost comparison
-    x = np.arange(len(names))
-    width = 0.35
-    
-    ax1.bar(x - width/2, normal_costs, width, label='Normal Condition', color='blue')
-    ax1.bar(x + width/2, impacted_costs, width, label='System Failure', color='red')
-    ax1.set_title('Impact of System Failures on Cost')
-    ax1.set_ylabel('Total Cost (Billion USD)')
-    ax1.set_xticks(x)
-    ax1.set_xticklabels(names, rotation=45)
-    ax1.legend()
-    
-    # Time comparison
-    ax2.bar(x - width/2, normal_years, width, label='Normal Condition', color='blue')
-    ax2.bar(x + width/2, impacted_years, width, label='System Failure', color='red')
-    ax2.set_title('Impact of System Failures on Time')
-    ax2.set_ylabel('Time Required (Years)')
-    ax2.set_xticks(x)
-    ax2.set_xticklabels(names, rotation=45)
-    ax2.legend()
-    
-    plt.tight_layout()
-    results_dir = get_results_dir(problem)
-    output_file = os.path.join(results_dir, 'reliability_impact.png')
-    plt.savefig(output_file)
-    print(f'System failure impact chart saved to {output_file}')
+
 
 # 绘制组合场景比例分析图
 def plot_ratio_analysis(problem=2):
@@ -263,13 +184,11 @@ def main():
     # 运行 Problem 1（100%可靠性）的绘图
     print("=== Problem 1: 100%可靠性 ===")
     plot_scenario_comparison(1)
-    plot_reliability_impact(1)
     plot_ratio_analysis(1)
     
     # 运行 Problem 2（当前可靠性）的绘图
     print("\n=== Problem 2: 当前可靠性 ===")
     plot_scenario_comparison(2)
-    plot_reliability_impact(2)
     plot_ratio_analysis(2)
 
 if __name__ == "__main__":

@@ -153,89 +153,7 @@ def calculate_scenario_3(problem=2):
     
     return best_scenario
 
-# 计算系统故障的影响
-def calculate_reliability_impact(problem=2):
-    """Analyze the impact of system failures on each scenario
-    
-    分析系统故障对每个场景的影响，考虑可靠性因素
-    
-    Args:
-        problem (int): 问题编号，1表示Problem 1（100%可靠性），2表示Problem 2（当前可靠性）
-        
-    Returns:
-        list: 包含各场景故障影响分析结果的列表
-    """
-    scenarios = [calculate_scenario_1(problem), calculate_scenario_2(problem), calculate_scenario_3(problem)]
-    impacted_scenarios = []
-    
-    # 根据问题编号选择可靠性和成本设置
-    if problem == 1:
-        elevator_reliability = ELEVATOR_RELIABILITY_P1
-        rocket_reliability = ROCKET_RELIABILITY_P1
-        cost_elevator_per = COST_ELEVATOR_PER_P1
-        cost_rocket_per = COST_ROCKET_PER_P1
-    else:  # problem == 2
-        elevator_reliability = ELEVATOR_RELIABILITY_P2
-        rocket_reliability = ROCKET_RELIABILITY_P2
-        cost_elevator_per = COST_ELEVATOR_PER_P2
-        cost_rocket_per = COST_ROCKET_PER_P2
-    
-    for scenario in scenarios:
-        if scenario["name"] == "Space Elevator Only":
-            # 考虑太空电梯可靠性
-            # 有效运输能力 = 原始运输能力 * 可靠性
-            effective_capacity = scenario["annual_capacity"] * elevator_reliability
-            # 计算考虑可靠性后的所需时间
-            years_needed = np.ceil(TOTAL_MATERIAL / effective_capacity)
-            # 计算总成本：使用预计算的成本
-            total_cost = TOTAL_MATERIAL * cost_elevator_per
-        elif scenario["name"] == "Traditional Rockets Only":
-            # 考虑火箭可靠性
-            # 有效运输能力 = 原始运输能力 * 可靠性
-            effective_capacity = scenario["annual_capacity"] * rocket_reliability
-            # 计算考虑可靠性后的所需时间
-            years_needed = np.ceil(TOTAL_MATERIAL / effective_capacity)
-            # 计算总成本：使用预计算的成本
-            total_cost = TOTAL_MATERIAL * cost_rocket_per
-        else:  # 组合场景
-            # 获取最优比例
-            elevator_ratio = scenario.get("elevator_ratio", 0.7)
-            rocket_ratio = scenario.get("rocket_ratio", 0.3)
-            
-            # 太空电梯部分
-            elevator_material = TOTAL_MATERIAL * elevator_ratio
-            elevator_annual_capacity = GALACTIC_HARBORS * ELEVATOR_ANNUAL_CAPACITY
-            # 考虑太空电梯可靠性后的有效运输能力
-            effective_elevator_capacity = elevator_annual_capacity * elevator_reliability
-            # 计算太空电梯部分考虑可靠性后的所需时间
-            elevator_years = np.ceil(elevator_material / effective_elevator_capacity)
-            # 计算太空电梯部分成本：使用预计算的成本
-            elevator_cost = elevator_material * cost_elevator_per
-            
-            # 火箭部分
-            rocket_material = TOTAL_MATERIAL * rocket_ratio
-            rocket_annual_capacity = ROCKET_LAUNCH_SITES * ROCKET_LAUNCHES_PER_YEAR_PER_SITE * ROCKET_PAYLOAD_AVG
-            # 考虑火箭可靠性后的有效运输能力
-            effective_rocket_capacity = rocket_annual_capacity * rocket_reliability
-            # 计算火箭部分考虑可靠性后的所需时间
-            rocket_years = np.ceil(rocket_material / effective_rocket_capacity)
-            # 计算火箭部分成本：使用预计算的成本
-            rocket_cost = rocket_material * cost_rocket_per
-            
-            # 总计算：总时间由运输能力较慢的部分决定
-            years_needed = max(elevator_years, rocket_years)
-            # 计算总成本：两部分成本之和
-            total_cost = elevator_cost + rocket_cost
-        
-        impacted_scenarios.append({
-            "name": scenario["name"],
-            "years_needed": years_needed,
-            "completion_year": START_YEAR + years_needed,
-            "total_cost": total_cost,
-            "impact": "System Failure Impact"
-        })
-    
-    return impacted_scenarios
+
 
 # 保存结果到文件
 def save_results_to_file(problem=2):
@@ -252,9 +170,6 @@ def save_results_to_file(problem=2):
     scenario1 = calculate_scenario_1(problem)
     scenario2 = calculate_scenario_2(problem)
     scenario3 = calculate_scenario_3(problem)
-    
-    # 计算系统故障影响
-    impacted_scenarios = calculate_reliability_impact(problem)
     
     # 获取结果目录的绝对路径
     results_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'results')
@@ -278,16 +193,7 @@ def save_results_to_file(problem=2):
                 f.write(f"传统火箭比例: {scenario['rocket_ratio']*100}%\n")
             f.write("\n")
     
-    # 保存系统故障影响结果
-    reliability_file = os.path.join(problem_dir, 'reliability_impact.txt')
-    with open(reliability_file, 'w') as f:
-        f.write(f"=== 系统故障影响分析 (Problem {problem}) ===\n")
-        for scenario in impacted_scenarios:
-            f.write(f"场景: {scenario['name']}\n")
-            f.write(f"所需时间: {scenario['years_needed']} 年\n")
-            f.write(f"完成年份: {scenario['completion_year']}\n")
-            f.write(f"总成本: {scenario['total_cost']}\n")
-            f.write("\n")
+
     
     # 保存组合场景的比例分析
     ratio_file = os.path.join(problem_dir, 'ratio_analysis.txt')
@@ -385,15 +291,7 @@ def main():
             print(f"传统火箭比例: {scenario['rocket_ratio']*100}%")
         print()
     
-    # 计算系统故障影响
-    print("=== 系统故障影响分析 ===")
-    impacted_scenarios_p1 = calculate_reliability_impact(1)
-    for scenario in impacted_scenarios_p1:
-        print(f"场景: {scenario['name']}")
-        print(f"所需时间: {scenario['years_needed']} 年")
-        print(f"完成年份: {scenario['completion_year']}")
-        print(f"总成本: ${scenario['total_cost']:,.2f}")
-        print()
+
     
     # 保存 Problem 1 结果到文件
     save_results_to_file(1)
@@ -416,15 +314,7 @@ def main():
             print(f"传统火箭比例: {scenario['rocket_ratio']*100}%")
         print()
     
-    # 计算系统故障影响
-    print("=== 系统故障影响分析 ===")
-    impacted_scenarios_p2 = calculate_reliability_impact(2)
-    for scenario in impacted_scenarios_p2:
-        print(f"场景: {scenario['name']}")
-        print(f"所需时间: {scenario['years_needed']} 年")
-        print(f"完成年份: {scenario['completion_year']}")
-        print(f"总成本: ${scenario['total_cost']:,.2f}")
-        print()
+
     
     # 保存 Problem 2 结果到文件
     save_results_to_file(2)

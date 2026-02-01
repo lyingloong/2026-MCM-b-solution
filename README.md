@@ -36,14 +36,5 @@ This repository contains the solution for the 2026 MCM Problem B, which focuses 
 - numpy
 - matplotlib
 
-## Analysis Results
-The script will generate the following results in the `results/` directory:
-- `scenario_analysis.txt`: Detailed analysis of all three scenarios
-- `reliability_impact.txt`: Impact of system failures on each scenario
-- `ratio_analysis.txt`: Analysis of different ratios in the combined scenario
-- `scenario_comparison.png`: Cost and time comparison chart
-- `reliability_impact.png`: System failure impact chart
-- `ratio_analysis.png`: Ratio variation analysis chart
-
 ## License
 MIT License
