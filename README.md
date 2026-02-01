@@ -16,8 +16,10 @@ This repository contains the solution for the 2026 MCM Problem B, which focuses 
 - `results/`: Contains output results and visualizations
 - `figures/`: Generated figures for the analysis
 - `src/`: Main source code
-  - `model.py`: Core model implementation for scenario analysis
+  - `main_model.py`: Core model implementation for scenario analysis
+  - `constants.py`: Constants used in the model
   - `plotter.py`: Chart generation for visualizing results
+  - `sensitivity_analysis.py`: Sensitivity analysis for model parameters(SE system)
 - `run_analysis.sh`: Bash script to run the complete analysis
 - `README.md`: Project documentation
 
