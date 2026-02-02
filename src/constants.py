@@ -1,5 +1,13 @@
+"""
+常量定义
+默认按年计算，若需按月计算，需设置 MONTH_MODE = True
+"""
+
 import numpy as np
 import math
+
+# MONTH_MODE = True # 按月计算
+MONTH_MODE = False # 按年计算
 
 # 常量定义
 TOTAL_MATERIAL = 100_000_000  # 总材料需求（吨）
@@ -11,6 +19,8 @@ TOTAL_MATERIAL_P3 = EXTRA_MATERIAL_P3 # Problem 3总材料需求（吨）
 # 太空电梯系统参数
 GALACTIC_HARBORS = 3  # 银河港数量
 ELEVATOR_ANNUAL_CAPACITY = 179_000  # 每个银河港年运输能力（吨）
+if MONTH_MODE:
+    ELEVATOR_ANNUAL_CAPACITY /= 12  # 按月计算时，将年运输能力除以12
 ELEVATOR_COST_PER_TON = 34.68  # 每吨运输成本（美元）
 
 # 可靠性设置
@@ -58,6 +68,8 @@ ROCKET_PAYLOAD_AVG = (ROCKET_PAYLOAD_MIN + ROCKET_PAYLOAD_MAX) / 2  # 平均有�
 ROCKET_COST_PER_LAUNCH = 4_000_000_000  # 单次发射成本（美元）
 ROCKET_THETA = 0.4 # 可回收火箭消耗系数
 ROCKET_LAUNCHES_PER_YEAR_PER_SITE = 1000  # 每个发射场每年发射次数
+if MONTH_MODE:
+    ROCKET_LAUNCHES_PER_YEAR_PER_SITE /= 12  # 按月计算时，将每年发射次数除以12
 ROCKET_N_G = 20 # 复用次数
 # 计算单位有效载荷成本：考虑发射成本、消耗系数、复用次数和可靠性
 # Problem 1 成本计算（100%可靠性）
