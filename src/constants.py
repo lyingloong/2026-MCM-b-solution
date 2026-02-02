@@ -14,7 +14,7 @@ TOTAL_MATERIAL = 100_000_000  # 总材料需求（吨）
 START_YEAR = 2050  # 开始年份
 
 EXTRA_MATERIAL_P3 = 121_765  # Problem 3额外材料需求（吨）
-TOTAL_MATERIAL_P3 = EXTRA_MATERIAL_P3 # Problem 3总材料需求（吨）
+TOTAL_MATERIAL_P3 = EXTRA_MATERIAL_P3 # Problem 3总材料需求（吨），这里只考虑额外需求
 
 # 太空电梯系统参数
 GALACTIC_HARBORS = 3  # 银河港数量
