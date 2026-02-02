@@ -1,0 +1,135 @@
+import re
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+
+# -------------------------- 1. Global Settings: Font & Display --------------------------
+plt.rcParams['font.sans-serif'] = ['DejaVu Sans']  # English font, no Chinese needed
+plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams['figure.figsize'] = (12, 7)
+plt.rcParams['savefig.dpi'] = 300
+plt.rcParams['figure.dpi'] = 100
+
+# -------------------------- 2. Read and Parse ratio_analysis.txt --------------------------
+def read_data(file_path='ratio_analysis.txt'):
+    """Read txt file and extract valid data into DataFrame"""
+    pattern = re.compile(
+        r'太空电梯比例: (\d+\.\d+)%.*?传统火箭比例: (\d+\.\d+)%.*?所需时间: (\d+\.\d+) 年.*?总成本: (\d+\.?\d*)',
+        re.DOTALL
+    )
+    data = []
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+        matches = pattern.findall(content)
+        for match in matches:
+            elevator_ratio = float(match[0])
+            rocket_ratio = float(match[1])
+            time_need = float(match[2])
+            total_cost = float(match[3])
+            data.append([elevator_ratio, rocket_ratio, time_need, total_cost])
+    
+    df = pd.DataFrame(
+        data,
+        columns=['Elevator Ratio (%)', 'Rocket Ratio (%)', 'Time Required (Yr)', 'Total Cost']
+    )
+    # Convert total cost to billion for better display
+    df['Total Cost (Billion)'] = df['Total Cost'] / 10**9
+    print("Data parsing completed, first 5 rows:")
+    print(df.head())
+    return df
+
+# -------------------------- 3. Plot All Charts in English --------------------------
+def plot_all_charts(df):
+    x = df['Elevator Ratio (%)']
+    cost_billion = df['Total Cost (Billion)']
+    rocket_ratio = df['Rocket Ratio (%)']
+
+    # ---------- Chart 1: Line Plot of Total Cost vs Elevator Ratio ----------
+    plt.figure()
+    plt.plot(x, cost_billion, color='#2E86AB', linewidth=2.5, marker='o', markersize=4, label='Total Cost')
+    plt.title('Total Cost Trend vs Space Elevator Ratio', fontsize=16, pad=20)
+    plt.xlabel('Space Elevator Ratio (%)', fontsize=12)
+    plt.ylabel('Total Cost (Billion USD)', fontsize=12)
+    plt.grid(True, alpha=0.3, linestyle='-')
+    plt.legend(fontsize=10)
+    plt.tight_layout()
+    plt.savefig('1_cost_trend_line.png')
+    print("Chart 1 saved: 1_cost_trend_line.png")
+
+    # ---------- Chart 2: Stacked Area Plot of Ratios ----------
+    plt.figure()
+    plt.fill_between(x, 0, x, color='#A23B72', alpha=0.7, label='Space Elevator Ratio')
+    plt.fill_between(x, x, 100, color='#F18F01', alpha=0.7, label='Conventional Rocket Ratio')
+    plt.title('Stacked Distribution of Elevator & Rocket Ratios', fontsize=16, pad=20)
+    plt.xlabel('Space Elevator Ratio (%)', fontsize=12)
+    plt.ylabel('Ratio (%)', fontsize=12)
+    plt.ylim(0, 100)
+    plt.grid(True, alpha=0.3)
+    plt.legend(fontsize=10)
+    plt.tight_layout()
+    plt.savefig('2_ratio_stacked_area.png')
+    print("Chart 2 saved: 2_ratio_stacked_area.png")
+
+    # ---------- Chart 3: Scatter Plot with Trend Line ----------
+    plt.figure()
+    plt.scatter(x, cost_billion, color='#C73E1D', s=30, alpha=0.8, label='Actual Data Points')
+    slope, intercept, r_value, p_value, std_err = stats.linregress(x, cost_billion)
+    trend_line = slope * x + intercept
+    plt.plot(x, trend_line, color='#000000', linewidth=2, linestyle='--', 
+             label=f'Trend Line (R²={r_value**2:.4f})')
+    plt.title('Scatter Plot of Cost vs Elevator Ratio (with Trend Line)', fontsize=16, pad=20)
+    plt.xlabel('Space Elevator Ratio (%)', fontsize=12)
+    plt.ylabel('Total Cost (Billion USD)', fontsize=12)
+    plt.grid(True, alpha=0.3)
+    plt.legend(fontsize=10)
+    plt.tight_layout()
+    plt.savefig('3_cost_scatter_trend.png')
+    print("Chart 3 saved: 3_cost_scatter_trend.png")
+
+    # ---------- Chart 4: Horizontal Bar Chart for Ratio Comparison ----------
+    plt.figure(figsize=(12, 8))
+    top_n = min(20, len(df))
+    x_bar = x[:top_n].astype(str)
+    plt.barh(x_bar, x[:top_n], color='#2E86AB', alpha=0.8, label='Space Elevator Ratio', height=0.4)
+    plt.barh([f'{i}-' for i in x_bar], rocket_ratio[:top_n], color='#F18F01', alpha=0.8, 
+             label='Conventional Rocket Ratio', height=0.4)
+    plt.title(f'Comparison of Elevator & Rocket Ratios (First {top_n} Groups)', fontsize=16, pad=20)
+    plt.xlabel('Ratio (%)', fontsize=12)
+    plt.ylabel('Space Elevator Ratio (%)', fontsize=12)
+    plt.grid(True, alpha=0.3, axis='x')
+    plt.legend(fontsize=10)
+    plt.tight_layout()
+    plt.savefig('4_ratio_horizontal_bar.png')
+    print("Chart 4 saved: 4_ratio_horizontal_bar.png")
+
+    # ---------- Chart 5: Bar Chart of Total Cost ----------
+    plt.figure(figsize=(15, 7))
+    show_n = min(30, len(df))
+    plt.bar(x[:show_n], cost_billion[:show_n], color='#A23B72', alpha=0.8, width=0.8)
+    plt.title(f'Total Cost by Space Elevator Ratio (First {show_n} Groups)', fontsize=16, pad=20)
+    plt.xlabel('Space Elevator Ratio (%)', fontsize=12)
+    plt.ylabel('Total Cost (Billion USD)', fontsize=12)
+    plt.grid(True, alpha=0.3, axis='y')
+    plt.tight_layout()
+    plt.savefig('5_cost_bar.png')
+    print("Chart 5 saved: 5_cost_bar.png")
+
+    # ---------- Chart 6: Correlation Heatmap ----------
+    plt.figure(figsize=(10, 8))
+    corr_data = df[['Elevator Ratio (%)', 'Rocket Ratio (%)', 'Time Required (Yr)', 'Total Cost (Billion)']].corr()
+    sns.heatmap(corr_data, annot=True, cmap='RdBu_r', vmin=-1, vmax=1, 
+                fmt='.4f', linewidths=0.5, annot_kws={'fontsize': 10})
+    plt.title('Correlation Heatmap of All Indicators', fontsize=16, pad=20)
+    plt.tight_layout()
+    plt.savefig('6_indicator_correlation_heatmap.png')
+    print("Chart 6 saved: 6_indicator_correlation_heatmap.png")
+
+# -------------------------- 4. Main Execution --------------------------
+if __name__ == '__main__':
+    df = read_data()
+    if df.empty:
+        print("Error: No valid data parsed from ratio_analysis.txt, please check the file format!")
+    else:
+        plot_all_charts(df)
+        print("All charts generated and saved successfully!")

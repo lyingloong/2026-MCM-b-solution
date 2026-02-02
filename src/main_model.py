@@ -9,7 +9,7 @@ def calculate_scenario_1(problem=2):
     计算仅使用太空电梯系统时的运输时间和成本
     
     Args:
-        problem (int): 问题编号，1表示Problem 1（100%可靠性），2表示Problem 2（当前可靠性）
+        problem (int): 问题编号，1表示Problem 1（100%可靠性），2表示Problem 2（当前可靠性），3表示Problem 3（额外材料需求）
         
     Returns:
         dict: 包含场景名称、所需时间、完成年份、总成本和年运输能力的字典
@@ -20,11 +20,22 @@ def calculate_scenario_1(problem=2):
         elevator_reliability = ELEVATOR_RELIABILITY_P1
         tug_reliability = TUG_RELIABILITY_P1
         cost_elevator_per = COST_ELEVATOR_PER_P1
+    elif problem == 3:
+        # Problem 3: 使用当前可靠性（与Problem 2相同）
+        elevator_reliability = ELEVATOR_RELIABILITY_P2
+        tug_reliability = TUG_RELIABILITY_P2
+        cost_elevator_per = COST_ELEVATOR_PER_P2
     else:  # problem == 2
         # Problem 2: 使用当前可靠性
         elevator_reliability = ELEVATOR_RELIABILITY_P2
         tug_reliability = TUG_RELIABILITY_P2
         cost_elevator_per = COST_ELEVATOR_PER_P2
+    
+    # 根据问题编号选择总材料需求
+    if problem == 3:
+        total_material = TOTAL_MATERIAL_P3
+    else:
+        total_material = TOTAL_MATERIAL
     
     # 计算太空电梯系统的理论年运输能力
     # 理论年运输能力 = 银河港数量 * 每个银河港年运输能力
@@ -35,9 +46,9 @@ def calculate_scenario_1(problem=2):
     effective_annual_capacity = theoretical_annual_capacity * elevator_reliability * tug_reliability
     
     # 计算所需时间：总材料需求除以有效年运输能力，向上取整
-    years_needed = np.ceil(TOTAL_MATERIAL / effective_annual_capacity)
+    years_needed = np.ceil(total_material / effective_annual_capacity)
     # 计算总成本：总材料需求乘以单位有效载荷成本
-    total_cost = TOTAL_MATERIAL * cost_elevator_per
+    total_cost = total_material * cost_elevator_per
     # 计算完成年份
     completion_year = START_YEAR + years_needed
     
@@ -55,7 +66,7 @@ def calculate_scenario_2(problem=2):
     计算仅使用传统火箭系统时的运输时间和成本
     
     Args:
-        problem (int): 问题编号，1表示Problem 1（100%可靠性），2表示Problem 2（当前可靠性）
+        problem (int): 问题编号，1表示Problem 1（100%可靠性），2表示Problem 2（当前可靠性），3表示Problem 3（额外材料需求）
         
     Returns:
         dict: 包含场景名称、所需时间、完成年份、总成本和年运输能力的字典
@@ -65,10 +76,20 @@ def calculate_scenario_2(problem=2):
         # Problem 1: 使用100%可靠性
         rocket_reliability = ROCKET_RELIABILITY_P1
         cost_rocket_per = COST_ROCKET_PER_P1
+    elif problem == 3:
+        # Problem 3: 使用当前可靠性（与Problem 2相同）
+        rocket_reliability = ROCKET_RELIABILITY_P2
+        cost_rocket_per = COST_ROCKET_PER_P2
     else:  # problem == 2
         # Problem 2: 使用当前可靠性
         rocket_reliability = ROCKET_RELIABILITY_P2
         cost_rocket_per = COST_ROCKET_PER_P2
+    
+    # 根据问题编号选择总材料需求
+    if problem == 3:
+        total_material = TOTAL_MATERIAL_P3
+    else:
+        total_material = TOTAL_MATERIAL
     
     # 计算火箭系统的理论年运输能力
     # 理论年运输能力 = 发射场数量 * 每个发射场年发射次数 * 平均有效载荷
@@ -79,9 +100,9 @@ def calculate_scenario_2(problem=2):
     effective_annual_capacity = theoretical_annual_capacity * rocket_reliability
     
     # 计算所需时间：总材料需求除以有效年运输能力，向上取整
-    years_needed = np.ceil(TOTAL_MATERIAL / effective_annual_capacity)
+    years_needed = np.ceil(total_material / effective_annual_capacity)
     # 计算总成本：总材料需求乘以单位有效载荷成本
-    total_cost = TOTAL_MATERIAL * cost_rocket_per
+    total_cost = total_material * cost_rocket_per
     # 计算完成年份
     completion_year = START_YEAR + years_needed
     
@@ -101,7 +122,7 @@ def calculate_scenario_3(problem=2, time_limit=None):
     - 如果未提供time_limit，则寻找总成本最小的组合
     
     Args:
-        problem (int): 问题编号，1表示Problem 1（100%可靠性），2表示Problem 2（当前可靠性）
+        problem (int): 问题编号，1表示Problem 1（100%可靠性），2表示Problem 2（当前可靠性），3表示Problem 3（额外材料需求）
         time_limit (int, optional): 时间限制（年）。如果为None，则寻找总成本最小的组合
         
     Returns:
@@ -109,6 +130,12 @@ def calculate_scenario_3(problem=2, time_limit=None):
     """
     best_scenario = None
     min_total_cost = float('inf')
+    
+    # 根据问题编号选择总材料需求
+    if problem == 3:
+        total_material = TOTAL_MATERIAL_P3
+    else:
+        total_material = TOTAL_MATERIAL
     
     # 使用通用函数获取所有比例的分析结果
     ratio_scenarios = calculate_combined_ratio_analysis(problem)
@@ -121,8 +148,8 @@ def calculate_scenario_3(problem=2, time_limit=None):
         total_cost = scenario['total_cost']
         
         # 计算各部分运输量
-        elevator_material = TOTAL_MATERIAL * elevator_ratio
-        rocket_material = TOTAL_MATERIAL * rocket_ratio
+        elevator_material = total_material * elevator_ratio
+        rocket_material = total_material * rocket_ratio
         
         # 更新最优解
         if time_limit is None:
@@ -162,7 +189,7 @@ def calculate_combined_ratio_analysis(problem=2):
     """计算不同太空电梯比例下的组合方案分析
     
     Args:
-        problem (int): 问题编号，1表示Problem 1（100%可靠性），2表示Problem 2（当前可靠性）
+        problem (int): 问题编号，1表示Problem 1（100%可靠性），2表示Problem 2（当前可靠性），3表示Problem 3（额外材料需求）
         
     Returns:
         list: 包含不同比例下组合方案分析结果的列表
@@ -174,10 +201,16 @@ def calculate_combined_ratio_analysis(problem=2):
         elevator_reliability = ELEVATOR_RELIABILITY_P1
         tug_reliability = TUG_RELIABILITY_P1
         rocket_reliability = ROCKET_RELIABILITY_P1
-    else:  # problem == 2
+    else:  # problem == 2 or problem == 3
         elevator_reliability = ELEVATOR_RELIABILITY_P2
         tug_reliability = TUG_RELIABILITY_P2
         rocket_reliability = ROCKET_RELIABILITY_P2
+    
+    # 根据问题编号选择总材料需求
+    if problem == 3:
+        total_material = TOTAL_MATERIAL_P3
+    else:
+        total_material = TOTAL_MATERIAL
     
     # 遍历不同的太空电梯比例（从0%到100%，步长1%）
     for elevator_ratio in range(0, 101, 1):
@@ -185,8 +218,8 @@ def calculate_combined_ratio_analysis(problem=2):
         rocket_ratio = 1 - elevator_ratio
         
         # 计算各部分运输量
-        elevator_material = TOTAL_MATERIAL * elevator_ratio
-        rocket_material = TOTAL_MATERIAL * rocket_ratio
+        elevator_material = total_material * elevator_ratio
+        rocket_material = total_material * rocket_ratio
         
         # 太空电梯计算
         if elevator_ratio > 0:
@@ -394,6 +427,29 @@ def main():
     # 保存 Problem 2 结果到文件
     save_results_to_file(2)
     print("Problem 2 结果已保存到 results/problem_2/ 目录")
+    
+    # 运行 Problem 3（额外材料需求）
+    print("\n=== Problem 3: 额外材料需求 ===")
+    print(f"额外材料需求: {EXTRA_MATERIAL_P3} 吨")
+    print(f"总材料需求: {TOTAL_MATERIAL_P3} 吨")
+    scenario1_p3 = calculate_scenario_1(3)
+    scenario2_p3 = calculate_scenario_2(3)
+    scenario3_p3 = calculate_scenario_3(3)
+    
+    print("\n=== 场景分析 ===")
+    for scenario in [scenario1_p3, scenario2_p3, scenario3_p3]:
+        print(f"场景: {scenario['name']}")
+        print(f"所需时间: {scenario['years_needed']} 年")
+        print(f"完成年份: {scenario['completion_year']}")
+        print(f"总成本: ${scenario['total_cost']:,.2f}")
+        if 'elevator_ratio' in scenario:
+            print(f"太空电梯比例: {scenario['elevator_ratio']*100}%")
+            print(f"传统火箭比例: {scenario['rocket_ratio']*100}%")
+        print()
+    
+    # 保存 Problem 3 结果到文件
+    save_results_to_file(3)
+    print("Problem 3 结果已保存到 results/problem_3/ 目录")
 
 if __name__ == "__main__":
     main()

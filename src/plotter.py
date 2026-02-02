@@ -8,6 +8,9 @@ from scipy.interpolate import interp1d
 from mpl_toolkits.mplot3d import Axes3D
 import os
 
+# 使用相对导入
+from .constants import *
+
 # 获取结果目录的绝对路径
 def get_results_dir(problem=None):
     """获取结果目录的绝对路径
@@ -319,43 +322,6 @@ def plot_ratio_analysis(problem=2):
     plt.savefig(bar_file, bbox_inches='tight', dpi=150)
     print(f'Ratio analysis bar chart (10% step) saved to {bar_file}')
     plt.close(fig2)
-    # ratios, years, costs = read_ratio_analysis(problem)
-    
-    # # Convert to percentage
-    # ratio_percent = [r * 100 for r in ratios]
-    # # Convert cost to billions of dollars
-    # costs_billion = [c / 1e9 for c in costs]
-    
-    # fig, ax1 = plt.subplots(figsize=(12, 6))
-    
-    # # Cost variation with ratio (left y-axis)
-    # color = 'tab:blue'
-    # ax1.set_xlabel('Space Elevator Ratio (%)')
-    # ax1.set_ylabel('Total Cost (Billion USD)', color=color)
-    # ax1.plot(ratio_percent, costs_billion, 'o-', color=color, label='Total Cost')
-    # ax1.tick_params(axis='y', labelcolor=color)
-    # ax1.grid(True, alpha=0.3)
-    
-    # # Time variation with ratio (right y-axis)
-    # ax2 = ax1.twinx()
-    # color = 'tab:green'
-    # ax2.set_ylabel('Time Required (Years)', color=color)
-    # ax2.plot(ratio_percent, years, 's-', color=color, label='Time Required')
-    # ax2.tick_params(axis='y', labelcolor=color)
-    
-    # # Title and legend
-    # plt.title('Cost and Time Variation with Space Elevator Ratio')
-    
-    # # Combine legends
-    # lines1, labels1 = ax1.get_legend_handles_labels()
-    # lines2, labels2 = ax2.get_legend_handles_labels()
-    # ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper center')
-    
-    # plt.tight_layout()
-    # results_dir = get_results_dir(problem)
-    # output_file = os.path.join(results_dir, 'ratio_analysis.png')
-    # plt.savefig(output_file)
-    # print(f'Ratio analysis chart saved to {output_file}')
 
 # 绘制Problem 1和Problem 2的对比图
 def plot_reliability_comparison():
@@ -1560,6 +1526,17 @@ def main():
     plot_ratio_analysis(2)
     plot_time_limit_analysis(2)
     
+    # 运行 Problem 3（额外材料需求）的绘图
+    print("\n=== Problem 3: 额外材料需求 ===")
+    plot_scenario_comparison_p3()
+    plot_ratio_analysis_p3()
+    plot_time_limit_analysis_p3()
+    
+    # 绘制Problem 2 vs Problem 3对比图
+    print("\n=== Problem 2 vs Problem 3 Comparison ===")
+    plot_problem_2_vs_3_comparison()
+    plot_ratio_comparison_p2_p3()
+    
     # 绘制可靠性对比图
     print("\n=== Reliability Comparison ===")
     plot_reliability_comparison()
@@ -1631,6 +1608,474 @@ def plot_time_limit_analysis(problem=2):
     output_file = os.path.join(results_dir, 'time_limit_analysis.png')
     plt.savefig(output_file)
     print(f'Time limit analysis chart saved to {output_file}')
+
+# 绘制Problem 3的场景对比图
+def plot_scenario_comparison_p3():
+    """Plot cost and time comparison for all scenarios in Problem 3
+    
+    Problem 3: 额外材料需求（121,765吨）
+    """
+    scenarios = read_scenario_analysis(3)
+    
+    names = [scenario['name'] for scenario in scenarios]
+    costs = [scenario['cost'] / 1e9 for scenario in scenarios]  # Convert to billions of dollars
+    years = [scenario['years'] for scenario in scenarios]
+    
+    # 使用更美观的颜色方案
+    colors = ['#1f77b4', '#2ca02c', '#9467bd']  # 蓝色、绿色、紫色
+    
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 7))
+    
+    # 设置整体字体大小
+    plt.rcParams.update({'font.size': 12})
+    
+    # Cost comparison
+    bars1 = ax1.bar(names, costs, color=colors, edgecolor='black', alpha=0.8)
+    ax1.set_title('Total Cost Comparison (Problem 3)', fontsize=14, fontweight='bold')
+    ax1.set_ylabel('Total Cost (Billion USD)', fontsize=12)
+    ax1.tick_params(axis='x', rotation=45, labelsize=11)
+    ax1.tick_params(axis='y', labelsize=11)
+    ax1.grid(axis='y', alpha=0.3)
+    
+    # 添加成本数据标签
+    for bar in bars1:
+        height = bar.get_height()
+        ax1.text(bar.get_x() + bar.get_width()/2., height + 0.1,
+                f'{height:.2f}', ha='center', va='bottom', fontsize=10)
+    
+    # Time comparison
+    bars2 = ax2.bar(names, years, color=colors, edgecolor='black', alpha=0.8)
+    ax2.set_title('Time Required Comparison (Problem 3)', fontsize=14, fontweight='bold')
+    ax2.set_ylabel('Time Required (Years)', fontsize=12)
+    ax2.tick_params(axis='x', rotation=45, labelsize=11)
+    ax2.tick_params(axis='y', labelsize=11)
+    ax2.grid(axis='y', alpha=0.3)
+    
+    # 添加时间数据标签
+    for bar in bars2:
+        height = bar.get_height()
+        ax2.text(bar.get_x() + bar.get_width()/2., height + 0.5,
+                f'{height:.1f}', ha='center', va='bottom', fontsize=10)
+    
+    # 调整布局
+    plt.tight_layout()
+    
+    # 添加整体标题
+    fig.suptitle(f'Scenario Comparison Analysis (Problem 3: Extra Material {EXTRA_MATERIAL_P3} tons)', 
+                 fontsize=16, fontweight='bold', y=1.02)
+    
+    results_dir = get_results_dir(3)
+    output_file = os.path.join(results_dir, 'scenario_comparison.png')
+    plt.savefig(output_file, bbox_inches='tight', dpi=150)
+    print(f'Scenario comparison chart (Problem 3) saved to {output_file}')
+
+# 绘制Problem 3的比例分析图
+def plot_ratio_analysis_p3():
+    """Plot cost and time variation with different ratios in combined scenario for Problem 3
+    
+    Problem 3: 额外材料需求（121,765吨）
+    """
+    ratios, years, costs = read_ratio_analysis(3)
+    # 原始数据转换：比例转百分比，成本转十亿美元
+    ratio_percent = [r * 100 for r in ratios]
+    costs_billion = [c / 1e9 for c in costs]
+    
+    # ===================== 1. 绘制原有双轴折线图（保留原逻辑）=====================
+    fig1, ax1 = plt.subplots(figsize=(12, 6))
+    # 成本曲线（左轴）
+    color_cost = '#1f77b4'
+    ax1.set_xlabel('Space Elevator Ratio (%)', fontsize=12)
+    ax1.set_ylabel('Total Cost (Billion USD)', color=color_cost, fontsize=12)
+    ax1.plot(ratio_percent, costs_billion, 'o-', color=color_cost, label='Total Cost', linewidth=2, markersize=6)
+    ax1.tick_params(axis='y', labelcolor=color_cost, labelsize=11)
+    ax1.grid(True, alpha=0.3)
+    # 时间曲线（右轴）
+    color_time = '#2ca02c'
+    ax2 = ax1.twinx()
+    ax2.set_ylabel('Time Required (Years)', color=color_time, fontsize=12)
+    ax2.plot(ratio_percent, years, 's-', color=color_time, label='Time Required', linewidth=2, markersize=6)
+    ax2.tick_params(axis='y', labelcolor=color_time, labelsize=11)
+    # 标题和图例
+    fig1.suptitle(f'Cost & Time vs Space Elevator Ratio (Line Chart) - Problem 3 (Extra Material: {EXTRA_MATERIAL_P3} tons)', 
+                  fontsize=14, fontweight='bold')
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper center', fontsize=11)
+    # 保存折线图
+    results_dir = get_results_dir(3)
+    line_file = os.path.join(results_dir, 'ratio_analysis_line.png')
+    plt.tight_layout()
+    plt.savefig(line_file, bbox_inches='tight', dpi=150)
+    print(f'Ratio analysis line chart (Problem 3) saved to {line_file}')
+    plt.close(fig1)
+
+    # ===================== 2. 绘制10%步长双组柱形图（核心新增）=====================
+    # 2.1 生成10%步长的目标比例（0,10,20,...,100）
+    target_ratios = np.arange(0, 101, 10)  # 严格10%步长
+    # 2.2 插值匹配原始数据到目标比例（保证每个步长有对应成本/时间）
+    f_cost = interp1d(ratio_percent, costs_billion, kind='linear', fill_value='extrapolate')
+    f_time = interp1d(ratio_percent, years, kind='linear', fill_value='extrapolate')
+    target_costs = f_cost(target_ratios)  # 目标比例对应的成本
+    target_years = f_time(target_ratios)  # 目标比例对应的时间
+
+    # 2.3 绘制双组柱形图
+    fig2, ax = plt.subplots(figsize=(14, 7))
+    # 柱形参数：宽度、偏移量（避免重叠）
+    bar_width = 3.5  # 柱形宽度，适配10%步长
+    x1 = target_ratios - bar_width/2  # 成本柱形x坐标
+    x2 = target_ratios + bar_width/2  # 时间柱形x坐标
+    # 定义配色（论文级，与折线图统一）
+    color_cost_bar = '#1f77b4'
+    color_time_bar = '#2ca02c'
+
+    # 绘制成本柱形
+    bars1 = ax.bar(x1, target_costs, width=bar_width, label='Total Cost (Billion USD)',
+                   color=color_cost_bar, edgecolor='black', alpha=0.8)
+    # 绘制时间柱形（次坐标轴，因为成本和时间量纲不同）
+    ax_twin = ax.twinx()
+    bars2 = ax_twin.bar(x2, target_years, width=bar_width, label='Time Required (Years)',
+                        color=color_time_bar, edgecolor='black', alpha=0.8)
+
+    # 2.4 图表样式设置
+    # 主坐标轴（成本）
+    ax.set_xlabel('Space Elevator Ratio (%)', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Total Cost (Billion USD)', fontsize=12, fontweight='bold', color=color_cost_bar)
+    ax.tick_params(axis='x', labelsize=11)
+    ax.tick_params(axis='y', labelcolor=color_cost_bar, labelsize=11)
+    ax.set_xticks(target_ratios)  # x轴刻度严格匹配10%步长
+    ax.grid(axis='y', alpha=0.3)
+    # 次坐标轴（时间）
+    ax_twin.set_ylabel('Time Required (Years)', fontsize=12, fontweight='bold', color=color_time_bar)
+    ax_twin.tick_params(axis='y', labelcolor=color_time_bar, labelsize=11)
+    # 标题
+    fig2.suptitle(f'Cost & Time vs Space Elevator Ratio (Bar Chart, 10% Step) - Problem 3 (Extra Material: {EXTRA_MATERIAL_P3} tons)',
+                  fontsize=14, fontweight='bold', y=1.02)
+    # 合并图例
+    lines1, labels1 = ax.get_legend_handles_labels()
+    lines2, labels2 = ax_twin.get_legend_handles_labels()
+    ax.legend(lines1 + lines2, labels1 + labels2, loc='upper center', fontsize=11, ncol=2)
+
+    # 2.5 添加数据标签（柱形顶部显示数值，更直观）
+    # 成本标签
+    for bar, val in zip(bars1, target_costs):
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height + max(target_costs)*0.01,
+                f'{val:.2f}', ha='center', va='bottom', fontsize=9, fontweight='bold')
+    # 时间标签
+    for bar, val in zip(bars2, target_years):
+        height = bar.get_height()
+        ax_twin.text(bar.get_x() + bar.get_width()/2., height + max(target_years)*0.02,
+                     f'{val:.1f}', ha='center', va='bottom', fontsize=9, fontweight='bold')
+
+    # 2.6 保存柱形图
+    bar_file = os.path.join(results_dir, 'ratio_analysis_bar_10step.png')
+    plt.tight_layout()
+    plt.savefig(bar_file, bbox_inches='tight', dpi=150)
+    print(f'Ratio analysis bar chart (10% step, Problem 3) saved to {bar_file}')
+    plt.close(fig2)
+
+# 绘制Problem 3与Problem 2的对比图
+def plot_problem_2_vs_3_comparison():
+    """Plot comparison between Problem 2 and Problem 3
+    
+    目的：显示额外材料需求对方案的影响
+    """
+    # 读取两份数据
+    scenarios_p2 = read_scenario_analysis(2)
+    scenarios_p3 = read_scenario_analysis(3)
+    
+    # 提取数据
+    names_p2 = [s['name'] for s in scenarios_p2]
+    costs_p2 = [s['cost'] / 1e9 for s in scenarios_p2]
+    years_p2 = [s['years'] for s in scenarios_p2]
+    
+    names_p3 = [s['name'] for s in scenarios_p3]
+    costs_p3 = [s['cost'] / 1e9 for s in scenarios_p3]
+    years_p3 = [s['years'] for s in scenarios_p3]
+    
+    # 计算差异
+    cost_diff = [costs_p3[i] - costs_p2[i] for i in range(len(costs_p2))]
+    year_diff = [years_p3[i] - years_p2[i] for i in range(len(years_p2))]
+    cost_pct_diff = [(costs_p3[i] - costs_p2[i]) / costs_p2[i] * 100 for i in range(len(costs_p2))]
+    
+    # 创建对比图表
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(18, 12))
+    
+    # 设置整体字体
+    plt.rcParams.update({'font.size': 12})
+    
+    # 1. 成本对比图
+    x = np.arange(len(names_p2))
+    width = 0.35
+    
+    bars1 = ax1.bar(x - width/2, costs_p2, width, label='Problem 2 (100M tons)', 
+                    color='#1f77b4', alpha=0.8, edgecolor='black')
+    bars2 = ax1.bar(x + width/2, costs_p3, width, label=f'Problem 3 ({TOTAL_MATERIAL_P3/1e6:.3f}M tons)', 
+                    color='#2ca02c', alpha=0.8, edgecolor='black')
+    
+    ax1.set_title('Cost Comparison: Problem 2 vs Problem 3', fontsize=14, fontweight='bold')
+    ax1.set_ylabel('Total Cost (Billion USD)', fontsize=12)
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(names_p2, rotation=45, ha='right')
+    ax1.legend()
+    ax1.grid(axis='y', alpha=0.3)
+    
+    # 添加数据标签
+    for bars in [bars1, bars2]:
+        for bar in bars:
+            height = bar.get_height()
+            ax1.text(bar.get_x() + bar.get_width()/2., height + 0.1,
+                    f'{height:.2f}', ha='center', va='bottom', fontsize=9)
+    
+    # 2. 时间对比图
+    bars3 = ax2.bar(x - width/2, years_p2, width, label='Problem 2 (100M tons)', 
+                    color='#1f77b4', alpha=0.8, edgecolor='black')
+    bars4 = ax2.bar(x + width/2, years_p3, width, label=f'Problem 3 ({TOTAL_MATERIAL_P3/1e6:.3f}M tons)', 
+                    color='#2ca02c', alpha=0.8, edgecolor='black')
+    
+    ax2.set_title('Time Comparison: Problem 2 vs Problem 3', fontsize=14, fontweight='bold')
+    ax2.set_ylabel('Time Required (Years)', fontsize=12)
+    ax2.set_xticks(x)
+    ax2.set_xticklabels(names_p2, rotation=45, ha='right')
+    ax2.legend()
+    ax2.grid(axis='y', alpha=0.3)
+    
+    # 添加数据标签
+    for bars in [bars3, bars4]:
+        for bar in bars:
+            height = bar.get_height()
+            ax2.text(bar.get_x() + bar.get_width()/2., height + 0.5,
+                    f'{height:.1f}', ha='center', va='bottom', fontsize=9)
+    
+    # 3. 成本差异图
+    bars5 = ax3.bar(x, cost_diff, color='#ff7f0e', alpha=0.8, edgecolor='black')
+    ax3.set_title('Cost Difference (Problem 3 - Problem 2)', fontsize=14, fontweight='bold')
+    ax3.set_ylabel('Cost Difference (Billion USD)', fontsize=12)
+    ax3.set_xticks(x)
+    ax3.set_xticklabels(names_p2, rotation=45, ha='right')
+    ax3.axhline(y=0, color='red', linestyle='--', linewidth=1)
+    ax3.grid(axis='y', alpha=0.3)
+    
+    # 添加数据标签
+    for bar, val in zip(bars5, cost_diff):
+        height = bar.get_height()
+        ax3.text(bar.get_x() + bar.get_width()/2., height + 0.01 if height > 0 else height - 0.01,
+                f'{val:.3f}', ha='center', va='bottom' if height > 0 else 'top', fontsize=9)
+    
+    # 4. 成本相对差异图
+    bars6 = ax4.bar(x, cost_pct_diff, color='#d62728', alpha=0.8, edgecolor='black')
+    ax4.set_title('Cost Percentage Difference (Problem 3 - Problem 2)', fontsize=14, fontweight='bold')
+    ax4.set_ylabel('Percentage Difference (%)', fontsize=12)
+    ax4.set_xticks(x)
+    ax4.set_xticklabels(names_p2, rotation=45, ha='right')
+    ax4.axhline(y=0, color='red', linestyle='--', linewidth=1)
+    ax4.grid(axis='y', alpha=0.3)
+    
+    # 添加数据标签
+    for bar, val in zip(bars6, cost_pct_diff):
+        height = bar.get_height()
+        ax4.text(bar.get_x() + bar.get_width()/2., height + 0.001 if height > 0 else height - 0.001,
+                f'{val:.3f}%', ha='center', va='bottom' if height > 0 else 'top', fontsize=9)
+    
+    # 调整布局
+    plt.tight_layout()
+    
+    # 添加整体标题和说明
+    fig.suptitle('Problem 2 vs Problem 3: Impact of Extra Material Demand', 
+                 fontsize=16, fontweight='bold', y=1.02)
+    fig.text(0.5, 0.02, f'Problem 2: {TOTAL_MATERIAL/1e6}M tons | Problem 3: {TOTAL_MATERIAL_P3/1e6:.3f}M tons (Extra: {EXTRA_MATERIAL_P3} tons)', 
+             ha='center', fontsize=11, style='italic', color='#666666')
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'problem_2_vs_3_comparison.png')
+    plt.savefig(output_file, dpi=150, bbox_inches='tight')
+    print(f'Problem 2 vs Problem 3 comparison chart saved to {output_file}')
+
+# 绘制Problem 3与Problem 2的比例分析对比图
+def plot_ratio_comparison_p2_p3():
+    """Plot ratio analysis comparison between Problem 2 and Problem 3
+    
+    目的：显示额外材料需求对比例分析的影响
+    """
+    # 读取两份数据
+    ratios_p2, years_p2, costs_p2 = read_ratio_analysis(2)
+    ratios_p3, years_p3, costs_p3 = read_ratio_analysis(3)
+    
+    # 转换为百分比和十亿美元
+    ratio_percent_p2 = [r * 100 for r in ratios_p2]
+    ratio_percent_p3 = [r * 100 for r in ratios_p3]
+    costs_billion_p2 = [c / 1e9 for c in costs_p2]
+    costs_billion_p3 = [c / 1e9 for c in costs_p3]
+    
+    # 计算差异
+    cost_diff = [costs_billion_p3[i] - costs_billion_p2[i] for i in range(len(costs_billion_p2))]
+    cost_pct_diff = [(costs_billion_p3[i] - costs_billion_p2[i]) / costs_billion_p2[i] * 100 for i in range(len(costs_billion_p2))]
+    
+    # 创建对比图表 - 改进版
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(18, 14))
+    
+    # 设置整体字体
+    plt.rcParams.update({'font.size': 12})
+    
+    # 1. 成本对比图（改进版）
+    ax1.plot(ratio_percent_p2, costs_billion_p2, 'o-', color='#1f77b4', alpha=0.8, 
+             label=f'Problem 2 ({TOTAL_MATERIAL/1e6}M tons)', linewidth=3, markersize=8)
+    ax1.plot(ratio_percent_p3, costs_billion_p3, 's-', color='#2ca02c', alpha=0.8, 
+             label=f'Problem 3 ({TOTAL_MATERIAL_P3/1e6:.3f}M tons)', linewidth=3, markersize=8)
+    # 添加填充区域，突出差异
+    ax1.fill_between(ratio_percent_p2, costs_billion_p2, costs_billion_p3, 
+                     where=[costs_billion_p3[i] > costs_billion_p2[i] for i in range(len(costs_billion_p2))],
+                     color='#2ca02c', alpha=0.2, label='Cost Increase')
+    ax1.set_title('Cost Comparison: Problem 2 vs Problem 3', fontsize=14, fontweight='bold')
+    ax1.set_xlabel('Space Elevator Ratio (%)', fontsize=12)
+    ax1.set_ylabel('Total Cost (Billion USD)', fontsize=12)
+    ax1.legend(loc='upper right')
+    ax1.grid(True, alpha=0.3)
+    
+    # 2. 时间对比图
+    ax2.plot(ratio_percent_p2, years_p2, 'o-', color='#1f77b4', alpha=0.8, 
+             label=f'Problem 2 ({TOTAL_MATERIAL/1e6}M tons)', linewidth=3, markersize=8)
+    ax2.plot(ratio_percent_p3, years_p3, 's-', color='#2ca02c', alpha=0.8, 
+             label=f'Problem 3 ({TOTAL_MATERIAL_P3/1e6:.3f}M tons)', linewidth=3, markersize=8)
+    ax2.set_title('Time Comparison: Problem 2 vs Problem 3', fontsize=14, fontweight='bold')
+    ax2.set_xlabel('Space Elevator Ratio (%)', fontsize=12)
+    ax2.set_ylabel('Time Required (Years)', fontsize=12)
+    ax2.legend(loc='upper right')
+    ax2.grid(True, alpha=0.3)
+    
+    # 3. 成本差异图（新增）
+    ax3.plot(ratio_percent_p2, cost_diff, '^-', color='#ff7f0e', alpha=0.8, 
+             label='Cost Difference (Problem 3 - Problem 2)', linewidth=3, markersize=8)
+    ax3.axhline(y=0, color='red', linestyle='--', linewidth=1.5, alpha=0.6)
+    ax3.set_title('Cost Difference: Problem 3 - Problem 2', fontsize=14, fontweight='bold')
+    ax3.set_xlabel('Space Elevator Ratio (%)', fontsize=12)
+    ax3.set_ylabel('Cost Difference (Billion USD)', fontsize=12)
+    ax3.legend(loc='upper right')
+    ax3.grid(True, alpha=0.3)
+    
+    # 4. 成本相对差异图（新增）
+    ax4.plot(ratio_percent_p2, cost_pct_diff, 'v-', color='#d62728', alpha=0.8, 
+             label='Cost Percentage Difference', linewidth=3, markersize=8)
+    ax4.axhline(y=0, color='red', linestyle='--', linewidth=1.5, alpha=0.6)
+    ax4.set_title('Cost Percentage Difference: Problem 3 vs Problem 2', fontsize=14, fontweight='bold')
+    ax4.set_xlabel('Space Elevator Ratio (%)', fontsize=12)
+    ax4.set_ylabel('Percentage Difference (%)', fontsize=12)
+    ax4.legend(loc='upper right')
+    ax4.grid(True, alpha=0.3)
+    
+    # 调整布局
+    plt.tight_layout()
+    
+    # 添加整体标题和说明
+    fig.suptitle('Enhanced Ratio Analysis: Problem 2 vs Problem 3', 
+                 fontsize=16, fontweight='bold', y=1.02)
+    fig.text(0.5, 0.02, f'Problem 2: {TOTAL_MATERIAL/1e6}M tons | Problem 3: {TOTAL_MATERIAL_P3/1e6:.3f}M tons (Extra: {EXTRA_MATERIAL_P3} tons)', 
+             ha='center', fontsize=11, style='italic', color='#666666')
+    
+    # 保存图表
+    results_dir = get_results_dir()
+    output_file = os.path.join(results_dir, 'ratio_comparison_p2_p3.png')
+    plt.savefig(output_file, dpi=150, bbox_inches='tight')
+    print(f'Enhanced ratio comparison (Problem 2 vs Problem 3) chart saved to {output_file}')
+
+    # 额外生成一个专注于差异的图表
+    fig2, (ax_diff, ax_pct) = plt.subplots(2, 1, figsize=(16, 10))
+    
+    # 1. 成本差异详细图
+    ax_diff.plot(ratio_percent_p2, cost_diff, 'o-', color='#ff7f0e', 
+                 linewidth=3, markersize=8)
+    ax_diff.axhline(y=0, color='red', linestyle='--', linewidth=1.5)
+    ax_diff.set_title('Detailed Cost Difference: Problem 3 - Problem 2', fontsize=14, fontweight='bold')
+    ax_diff.set_xlabel('Space Elevator Ratio (%)', fontsize=12)
+    ax_diff.set_ylabel('Cost Difference (Billion USD)', fontsize=12)
+    ax_diff.grid(True, alpha=0.3)
+    
+    # 添加数据标签
+    key_ratios = [0, 25, 50, 75, 100]
+    for ratio in key_ratios:
+        if ratio in ratio_percent_p2:
+            idx = ratio_percent_p2.index(ratio)
+            diff = cost_diff[idx]
+            ax_diff.text(ratio, diff + 0.001 if diff > 0 else diff - 0.001,
+                        f'{diff:.3f}', ha='center', va='bottom' if diff > 0 else 'top',
+                        fontsize=10, fontweight='bold', color='#ff7f0e')
+    
+    # 2. 成本相对差异详细图
+    ax_pct.plot(ratio_percent_p2, cost_pct_diff, 's-', color='#d62728', 
+                linewidth=3, markersize=8)
+    ax_pct.axhline(y=0, color='red', linestyle='--', linewidth=1.5)
+    ax_pct.set_title('Detailed Cost Percentage Difference: Problem 3 vs Problem 2', fontsize=14, fontweight='bold')
+    ax_pct.set_xlabel('Space Elevator Ratio (%)', fontsize=12)
+    ax_pct.set_ylabel('Percentage Difference (%)', fontsize=12)
+    ax_pct.grid(True, alpha=0.3)
+    
+    # 添加数据标签
+    for ratio in key_ratios:
+        if ratio in ratio_percent_p2:
+            idx = ratio_percent_p2.index(ratio)
+            pct_diff = cost_pct_diff[idx]
+            ax_pct.text(ratio, pct_diff + 0.001 if pct_diff > 0 else pct_diff - 0.001,
+                       f'{pct_diff:.3f}%', ha='center', va='bottom' if pct_diff > 0 else 'top',
+                       fontsize=10, fontweight='bold', color='#d62728')
+    
+    plt.tight_layout()
+    fig2.suptitle('Focused Difference Analysis: Problem 2 vs Problem 3', 
+                  fontsize=16, fontweight='bold', y=1.02)
+    fig2.text(0.5, 0.02, f'Problem 2: {TOTAL_MATERIAL/1e6}M tons | Problem 3: {TOTAL_MATERIAL_P3/1e6:.3f}M tons (Extra: {EXTRA_MATERIAL_P3} tons)', 
+              ha='center', fontsize=11, style='italic', color='#666666')
+    
+    # 保存专注差异的图表
+    output_file2 = os.path.join(results_dir, 'ratio_comparison_p2_p3_difference_focus.png')
+    plt.savefig(output_file2, dpi=150, bbox_inches='tight')
+    print(f'Focused difference analysis chart saved to {output_file2}')
+
+# 绘制Problem 3的时间限制分析图
+def plot_time_limit_analysis_p3():
+    """Plot optimal solutions under different time limits for Problem 3
+    
+    Problem 3: 额外材料需求（121,765吨）
+    """
+    time_limits, actual_years, costs, elevator_ratios, rocket_ratios = read_time_limit_analysis(3)
+    
+    # Convert cost to billions of dollars
+    costs_billion = [c / 1e9 for c in costs]
+    # Convert ratios to percentage
+    elevator_ratios_percent = [r * 100 for r in elevator_ratios]
+    rocket_ratios_percent = [r * 100 for r in rocket_ratios]
+    
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 6))
+    
+    # Plot cost variation with time limit
+    ax1.plot(time_limits, costs_billion, marker='o', color='blue')
+    ax1.set_title('Cost Variation with Time Limit (Problem 3)')
+    ax1.set_xlabel('Time Limit (Years)')
+    ax1.set_ylabel('Total Cost (Billion USD)')
+    ax1.grid(True)
+    
+    # Plot actual time vs time limit
+    ax2.plot(time_limits, actual_years, marker='o', color='green')
+    ax2.plot(time_limits, time_limits, linestyle='--', color='red', label='Time Limit')
+    ax2.set_title('Actual Time vs Time Limit (Problem 3)')
+    ax2.set_xlabel('Time Limit (Years)')
+    ax2.set_ylabel('Actual Time (Years)')
+    ax2.legend()
+    ax2.grid(True)
+    
+    # Plot ratio variation with time limit
+    ax3.plot(time_limits, elevator_ratios_percent, marker='o', color='blue', label='Space Elevator')
+    ax3.plot(time_limits, rocket_ratios_percent, marker='o', color='orange', label='Traditional Rockets')
+    ax3.set_title('Ratio Variation with Time Limit (Problem 3)')
+    ax3.set_xlabel('Time Limit (Years)')
+    ax3.set_ylabel('Ratio (%)')
+    ax3.legend()
+    ax3.grid(True)
+    
+    plt.tight_layout()
+    results_dir = get_results_dir(3)
+    output_file = os.path.join(results_dir, 'time_limit_analysis.png')
+    plt.savefig(output_file)
+    print(f'Time limit analysis chart (Problem 3) saved to {output_file}')
 
 if __name__ == "__main__":
     main()
