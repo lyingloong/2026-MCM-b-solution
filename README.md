@@ -1,12 +1,17 @@
 # [2026 MCM Problem B: Creating a Moon Colony Using a Space Elevator System](https://www.contest.comap.com/undergraduate/contests/mcm/contests/2026/problems/2026_MCM_Problem_B.pdf)
 
 ## Team Information
-- [Hao Wang](https://github.com/lyingloong)
-- [Renhao Li](https://github.com/LiRenHao)
-- [Wenchao Yu](https://github.com/ANT181603)
+**Team Control Number**: 2622082
+
+### Core Members
+| Name | GitHub Profile |
+| --- | --- |
+| Hao Wang | [lyingloong](https://github.com/lyingloong) |
+| Renhao Li | [LiRenHao](https://github.com/LiRenHao) |
+| Wenchao Yu | [ANT181603](https://github.com/ANT181603) |
 
 ## Project Overview
-This repository contains the solution for the 2026 MCM Problem B, which focuses on creating a moon colony using a space elevator system. The analysis includes three scenarios: using only space elevators, using only traditional rockets, and a combined approach with optimal ratio.
+This repository contains the solution for the 2026 MCM Problem B, which focuses on creating a moon colony using a space elevator system. The analysis includes three scenarios: using only space elevators, using only traditional rockets, and a combined approach with optimal ratio. The solution also includes detailed analysis for three different problem formulations, with Problem 3 analyzed at monthly granularity.
 
 ## Repository Structure
 - `data/`: Contains data files used in the analysis
@@ -20,24 +25,26 @@ This repository contains the solution for the 2026 MCM Problem B, which focuses 
   - `plotter.py`: Chart generation for visualizing results
   - `sensitivity_analysis.py`: Sensitivity analysis for model parameters(SE system)
   - `pollution_analysis.py`: Pollution analysis
-- `run_analysis.sh`: Bash script to run the complete analysis
+- `run_main.sh`: Bash script to run the complete analysis
+- `requirements.txt`: Dependencies required for the project
 - `README.md`: Project documentation
 
 ## Getting Started
 1. Clone this repository
 2. Install necessary dependencies:
    ```bash
-   pip install numpy matplotlib
+   pip install -r requirements.txt
    ```
 3. Run the analysis script:
    ```bash
-   bash run_analysis.sh
+   bash run_main.sh
    ```
 
 ## Dependencies
 - Python 3.8+
 - numpy
 - matplotlib
+- scipy
 
 ## License
 MIT License
