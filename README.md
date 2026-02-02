@@ -1,4 +1,4 @@
-# 2026 MCM Problem B: Creating a Moon Colony Using a Space Elevator System
+# [2026 MCM Problem B: Creating a Moon Colony Using a Space Elevator System](https://www.contest.comap.com/undergraduate/contests/mcm/contests/2026/problems/2026_MCM_Problem_B.pdf)
 
 ## Team Information
 - [Hao Wang](https://github.com/lyingloong)
@@ -12,7 +12,6 @@ This repository contains the solution for the 2026 MCM Problem B, which focuses 
 - `data/`: Contains data files used in the analysis
   - `Global_Space_Exploration_Dataset.csv`: Original dataset from Kaggle (https://www.kaggle.com/datasets/atharvasoundankar/global-space-exploration-dataset-2000-2025)
   - `space_launch_data_2000_2025.csv`: Processed data based on the original dataset
-- `models/`: Contains models and algorithms implementation
 - `results/`: Contains output results and visualizations
 - `figures/`: Generated figures for the analysis
 - `src/`: Main source code
