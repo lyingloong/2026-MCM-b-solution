@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from src.constants import *
 
-# 计算每个场景的成本和时间线
+
 def calculate_scenario_1(problem=2):
     """Scenario 1: Space Elevator Only
     
@@ -60,6 +60,7 @@ def calculate_scenario_1(problem=2):
         "annual_capacity": effective_annual_capacity
     }
 
+
 def calculate_scenario_2(problem=2):
     """Scenario 2: Traditional Rockets Only
     
@@ -113,6 +114,7 @@ def calculate_scenario_2(problem=2):
         "total_cost": total_cost,
         "annual_capacity": effective_annual_capacity
     }
+
 
 def calculate_scenario_3(problem=2, time_limit=None):
     """Scenario 3: Combined Space Elevator and Traditional Rockets (Finding Optimal Ratio)
@@ -184,7 +186,7 @@ def calculate_scenario_3(problem=2, time_limit=None):
     
     return best_scenario
 
-# 计算不同比例下的组合方案
+
 def calculate_combined_ratio_analysis(problem=2):
     """计算不同太空电梯比例下的组合方案分析
     
@@ -279,7 +281,7 @@ def calculate_combined_ratio_analysis(problem=2):
     
     return scenarios
 
-# 计算不同时间限制下的最优组合方案
+
 def calculate_combined_scenarios_by_time_limit(problem=2, time_limits=None):
     """计算不同时间限制下的最优组合方案
     
@@ -303,8 +305,6 @@ def calculate_combined_scenarios_by_time_limit(problem=2, time_limits=None):
     return scenarios
 
 
-
-# 保存结果到文件
 def save_results_to_file(problem=2):
     """保存计算结果到文件，供画图工具使用
     
@@ -342,7 +342,6 @@ def save_results_to_file(problem=2):
                 f.write(f"传统火箭比例: {scenario['rocket_ratio']*100}%\n")
             f.write("\n")
     
-
     
     # 保存组合场景的比例分析
     ratio_file = os.path.join(problem_dir, 'ratio_analysis.txt')
@@ -375,7 +374,6 @@ def save_results_to_file(problem=2):
             f.write(f"总成本: {scenario['total_cost']}\n")
             f.write("\n")
 
-# 主函数
 def main():
     """运行所有计算并输出结果
     
@@ -399,7 +397,6 @@ def main():
             print(f"传统火箭比例: {scenario['rocket_ratio']*100}%")
         print()
     
-
     
     # 保存 Problem 1 结果到文件
     save_results_to_file(1)
@@ -423,7 +420,6 @@ def main():
         print()
     
 
-    
     # 保存 Problem 2 结果到文件
     save_results_to_file(2)
     print("Problem 2 结果已保存到 results/problem_2/ 目录")

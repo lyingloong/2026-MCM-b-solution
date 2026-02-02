@@ -8,7 +8,6 @@ from scipy.interpolate import interp1d
 from mpl_toolkits.mplot3d import Axes3D
 import os
 
-# 使用相对导入
 from .constants import *
 
 # 获取结果目录的绝对路径
