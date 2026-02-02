@@ -1646,7 +1646,7 @@ def plot_scenario_comparison_p3():
     # Time comparison
     bars2 = ax2.bar(names, years, color=colors, edgecolor='black', alpha=0.8)
     ax2.set_title('Time Required Comparison (Problem 3)', fontsize=14, fontweight='bold')
-    ax2.set_ylabel('Time Required (Years)', fontsize=12)
+    ax2.set_ylabel('Time Required (Years)' if not MONTH_MODE else 'Time Required (Months)', fontsize=12)
     ax2.tick_params(axis='x', rotation=45, labelsize=11)
     ax2.tick_params(axis='y', labelsize=11)
     ax2.grid(axis='y', alpha=0.3)
@@ -1692,7 +1692,7 @@ def plot_ratio_analysis_p3():
     # 时间曲线（右轴）
     color_time = '#2ca02c'
     ax2 = ax1.twinx()
-    ax2.set_ylabel('Time Required (Years)', color=color_time, fontsize=12)
+    ax2.set_ylabel('Time Required (Years)' if not MONTH_MODE else 'Time Required (Months)', color=color_time, fontsize=12)
     ax2.plot(ratio_percent, years, 's-', color=color_time, label='Time Required', linewidth=2, markersize=6)
     ax2.tick_params(axis='y', labelcolor=color_time, labelsize=11)
     # 标题和图例
@@ -1733,7 +1733,7 @@ def plot_ratio_analysis_p3():
                    color=color_cost_bar, edgecolor='black', alpha=0.8)
     # 绘制时间柱形（次坐标轴，因为成本和时间量纲不同）
     ax_twin = ax.twinx()
-    bars2 = ax_twin.bar(x2, target_years, width=bar_width, label='Time Required (Years)',
+    bars2 = ax_twin.bar(x2, target_years, width=bar_width, label='Time Required (Years)' if not MONTH_MODE else 'Time Required (Months)',
                         color=color_time_bar, edgecolor='black', alpha=0.8)
 
     # 2.4 图表样式设置
@@ -1745,7 +1745,7 @@ def plot_ratio_analysis_p3():
     ax.set_xticks(target_ratios)  # x轴刻度严格匹配10%步长
     ax.grid(axis='y', alpha=0.3)
     # 次坐标轴（时间）
-    ax_twin.set_ylabel('Time Required (Years)', fontsize=12, fontweight='bold', color=color_time_bar)
+    ax_twin.set_ylabel('Time Required (Years)' if not MONTH_MODE else 'Time Required (Months)', fontsize=12, fontweight='bold', color=color_time_bar)
     ax_twin.tick_params(axis='y', labelcolor=color_time_bar, labelsize=11)
     # 标题
     fig2.suptitle(f'Cost & Time vs Space Elevator Ratio (Bar Chart, 10% Step) - Problem 3 (Extra Material: {EXTRA_MATERIAL_P3} tons)',
@@ -2049,7 +2049,7 @@ def plot_time_limit_analysis_p3():
     # Plot cost variation with time limit
     ax1.plot(time_limits, costs_billion, marker='o', color='blue')
     ax1.set_title('Cost Variation with Time Limit (Problem 3)')
-    ax1.set_xlabel('Time Limit (Years)')
+    ax1.set_xlabel('Time Limit (Years)' if not MONTH_MODE else 'Time Limit (Months)')
     ax1.set_ylabel('Total Cost (Billion USD)')
     ax1.grid(True)
     
@@ -2057,7 +2057,7 @@ def plot_time_limit_analysis_p3():
     ax2.plot(time_limits, actual_years, marker='o', color='green')
     ax2.plot(time_limits, time_limits, linestyle='--', color='red', label='Time Limit')
     ax2.set_title('Actual Time vs Time Limit (Problem 3)')
-    ax2.set_xlabel('Time Limit (Years)')
+    ax2.set_xlabel('Time Limit (Years)' if not MONTH_MODE else 'Time Limit (Months)')
     ax2.set_ylabel('Actual Time (Years)')
     ax2.legend()
     ax2.grid(True)
@@ -2066,7 +2066,7 @@ def plot_time_limit_analysis_p3():
     ax3.plot(time_limits, elevator_ratios_percent, marker='o', color='blue', label='Space Elevator')
     ax3.plot(time_limits, rocket_ratios_percent, marker='o', color='orange', label='Traditional Rockets')
     ax3.set_title('Ratio Variation with Time Limit (Problem 3)')
-    ax3.set_xlabel('Time Limit (Years)')
+    ax3.set_xlabel('Time Limit (Years)' if not MONTH_MODE else 'Time Limit (Months)')
     ax3.set_ylabel('Ratio (%)')
     ax3.legend()
     ax3.grid(True)
