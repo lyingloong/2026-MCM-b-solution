@@ -11,5 +11,8 @@ cd results/problem_3
 python extra_plot_generator_p3.py
 cd -
 
+echo "Running sensitivity analysis..."
+python src/sensitivity_analysis_v2.py
+
 echo "Analysis completed successfully!"
 echo "Results are available in the 'results' directory."
