@@ -20,6 +20,7 @@ This repository contains the solution for the 2026 MCM Problem B, which focuses 
   - `constants.py`: Constants used in the model
   - `plotter.py`: Chart generation for visualizing results
   - `sensitivity_analysis.py`: Sensitivity analysis for model parameters(SE system)
+  - `pollution_analysis.py`: Pollution analysis
 - `run_analysis.sh`: Bash script to run the complete analysis
 - `README.md`: Project documentation
 
