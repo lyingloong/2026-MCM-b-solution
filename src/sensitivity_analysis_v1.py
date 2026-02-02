@@ -1,7 +1,9 @@
 """
-Sensitivity Analysis
+敏感性分析模块
 
-对公式进行敏感性分析：
+该模块用于对太空电梯+摆渡火箭系统和传统火箭系统的运输时间和成本进行敏感性分析。
+
+分析公式：
     T = max{ SE_ratio * T_S * Amount_S , (1-SE_ratio) * T_R * Amount_R }
     C = SE_ratio * C_S * Amount_S + (1-SE_ratio) * C_R * Amount_R
 
@@ -12,8 +14,18 @@ Sensitivity Analysis
     C_S (float): 单位运输量的太空电梯+摆渡火箭系统运输成本
     C_R (float): 单位运输量的传统火箭系统运输成本
 
-这里敏感性分析针对 T_S T_R C_S C_R 这四个参数，即分别对这四个参数进行变化，按照 main_model.py 的方法分析运输时间和成本的变化情况。
+功能说明：
+    - 对T_S、T_R、C_S、C_R四个参数进行敏感性分析
+    - 分析不同时间限制下的最优SE_ratio
+    - 生成三维可视化图表展示分析结果
+    - 将分析结果保存到文件中
+
+结果输出：
+    - 三维可视化图表保存到 results/sensitivity_analysis/ 目录
+    - 分析数据保存为txt文件
 """
+
+
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,19 +40,26 @@ from constants import *
 
 def calculate_combined_ratio_analysis(SE_ratio, T_S, T_R, C_S, C_R, time_limit):
     """
-    计算不同时间限制下的最优SE_ratio（满足时间限制的最小cost）,以及对应的运输时间和成本。
+    计算给定参数下的运输时间、成本及可行性。
+    
+    该函数计算在指定SE_ratio下的运输时间、成本，并检查是否满足时间限制。
     
     Args:
-        SE_ratio (float): 太空电梯+摆渡火箭系统比例
+        SE_ratio (float): 太空电梯+摆渡火箭系统比例，范围0-1
         T_S (float): 单位运输量的太空电梯+摆渡火箭系统运输时间
         T_R (float): 单位运输量的传统火箭系统运输时间
         C_S (float): 单位运输量的太空电梯+摆渡火箭系统运输成本
         C_R (float): 单位运输量的传统火箭系统运输成本
-        time_limit (float): 时间限制
+        time_limit (float): 时间限制（年）
     
     Returns:
-        dict: 包含分析结果的字典
+        dict: 包含分析结果的字典，包含以下键：
+            - SE_ratio: 输入的太空电梯+摆渡火箭系统比例
+            - total_time: 总运输时间（年）
+            - total_cost: 总运输成本
+            - feasible: 是否满足时间限制
     """
+
     # 总材料需求（假设为常量，与问题1和2相同）
     total_material = TOTAL_MATERIAL
     
@@ -71,24 +90,30 @@ def calculate_combined_ratio_analysis(SE_ratio, T_S, T_R, C_S, C_R, time_limit):
 
 def sensitivity_analysis_parameter(param_name, param_range, problem=2):
     """
-    对单个参数进行敏感性分析：
-    调用 calculate_combined_ratio_analysis 函数，对参数 param_name 进行变化，分析运输时间和成本的变化情况。
-    这个函数会得出在一系列 time_limit 下，不同 SE_ratio 和不同 param_name 取值下的最小成本以及对应的运输时间。
+    对单个参数进行敏感性分析。
     
-    参数说明：
+    该函数对指定参数进行敏感性分析，分析不同时间限制下，不同SE_ratio和参数取值对运输时间和成本的影响。
+    
+    可分析的参数：
     - T_S: 单位运输量的太空电梯+摆渡火箭系统运输时间
     - T_R: 单位运输量的传统火箭系统运输时间
     - C_S: 单位运输量的太空电梯+摆渡火箭系统运输成本
     - C_R: 单位运输量的传统火箭系统运输成本
     
     Args:
-        param_name (str): 参数名称
-        param_range (list): 参数取值范围
-        problem (int): 问题编号
+        param_name (str): 参数名称，必须是'T_S'、'T_R'、'C_S'或'C_R'之一
+        param_range (list): 参数取值范围，为数值列表
+        problem (int): 问题编号，1表示100%可靠性，2表示当前可靠性
     
     Returns:
-        dict: 包含分析结果的字典
+        dict: 包含分析结果的字典，结构如下：
+            - param_name: 参数名称
+            - param_range: 参数取值范围
+            - time_limits: 时间限制范围
+            - se_ratios: SE_ratio取值范围
+            - data: 嵌套字典，包含不同时间限制、参数取值和SE_ratio下的分析结果
     """
+
     # 根据问题编号选择参数默认值
     if problem == 1:
         # Problem 1: 100%可靠性
@@ -174,18 +199,21 @@ def sensitivity_analysis_parameter(param_name, param_range, problem=2):
 
 def run_sensitivity_analysis(problem=1):
     """
-    Run complete sensitivity analysis
+    运行完整的敏感性分析。
     
-    Generate a plot for each time_limit, showing the minimum cost variation under different SE_ratio and different param_name values.
-    The three axes are:
-        x-axis: param_name value
-        y-axis: SE_ratio value
-        z-axis: cost
-    Images are output to results/sensitivity_analysis/
-
+    该函数对所有参数进行敏感性分析，生成三维可视化图表，并将结果保存到文件中。
+    图表的三个轴分别为：
+        x轴: SE_ratio值
+        y轴: 参数值
+        z轴: 成本或时间
+    
     Args:
-        problem (int): problem number
+        problem (int): 问题编号，1表示100%可靠性，2表示当前可靠性
+    
+    Returns:
+        None
     """
+
     print(f"=== Running Sensitivity Analysis for Problem {problem} ===")
     
     # Create results directory
@@ -335,9 +363,11 @@ def run_sensitivity_analysis(problem=1):
 
 def main():
     """
-    Run sensitivity analysis (Problem 1)
+    主函数，运行敏感性分析（问题1）。
+    
+    该函数调用run_sensitivity_analysis函数，对问题1（100%可靠性）进行敏感性分析。
     """
-    print("=== Sensitivity Analysis ===")
+    print("=== 敏感性分析 ===")
     run_sensitivity_analysis(1)
 
 

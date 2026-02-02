@@ -23,7 +23,8 @@ This repository contains the solution for the 2026 MCM Problem B, which focuses 
   - `main_model.py`: Core model implementation for scenario analysis
   - `constants.py`: Constants used in the model
   - `plotter.py`: Chart generation for visualizing results
-  - `sensitivity_analysis.py`: Sensitivity analysis for model parameters(SE system)
+  - `sensitivity_analysis_v1.py`: Basic sensitivity analysis for model parameters
+  - `sensitivity_analysis_v2.py`: Enhanced sensitivity analysis with smooth visualization
   - `pollution_analysis.py`: Pollution analysis
 - `run_main.sh`: Bash script to run the complete analysis
 - `requirements.txt`: Dependencies required for the project
