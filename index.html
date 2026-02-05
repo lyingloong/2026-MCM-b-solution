@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lyingloong-26MCMproblemB</title>
+    <style>
+        /* global styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+        body {
+            background-color: #f9fafb;
+            color: #1f2937;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+        .py-8 {
+            padding-top: 32px;
+            padding-bottom: 32px;
+        }
+        .py-12 {
+            padding-top: 48px;
+            padding-bottom: 48px;
+        }
+        @media (min-width: 768px) {
+            .md\:py-12 {
+                padding-top: 48px;
+                padding-bottom: 48px;
+            }
+        }
+
+        /* title style */
+        .title {
+            text-align: center;
+            /* border-radius: 4%; */
+            /* background-color: #ef4444; */
+            width: 16vw;
+            position: relative;
+            margin: auto auto 2% auto;
+            overflow: hidden;
+            z-index: 2;
+        }
+        .title::before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 400%;
+            background-color: rgba(12, 49, 49, 1);
+            transform: rotate(45deg);
+            transform-origin: 0 0;
+            animation: rotate 2s linear infinite;
+            z-index: 0;
+        }
+        @keyframes rotate {
+            0% {
+                transform: rotate(45deg);
+            }
+            100% {
+                transform: rotate(405deg);
+            }
+        }
+        .title::after {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 90%;
+            height: 80%;
+            /* background-color: rgba(255, 24, 255, 1); */
+            background-color: #f9fafb;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+        .title h1 {
+            font-size: 200%;
+            font-weight: 700;
+            color: #1f2937;
+            position: relative;
+            margin: 0;
+            z-index: 3;
+        }
+
+        /* member-card style */
+        .card-section {
+            margin-bottom: 48px;
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+        .mb-12 {
+            margin-bottom: 48px;
+        }
+
+        /* team-card style */
+        .team-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #1f2937;
+        }
+        .team-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: clamp(1rem, 3vw, 2.5rem);
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            margin-top: 1.5rem;
+            aspect-ratio: 3 / 1;
+            align-items: center;
+            /* padding: clamp(1rem, 2.5vw, 2rem); */
+        }
+        .team-card {
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            transition: transform 0.2s ease;
+            text-align: center;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+        .team-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .team-card p {
+            margin-bottom: 8px;
+            color: #4b5563;
+        }
+        .team-card .name {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        /* PDF styles */
+        .pdf-container {
+            height: 80vh;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            position: relative;
+            padding-bottom: 8px;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #1f2937;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: #3b82f6;
+        }
+        .pdf-tip {
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+        .pdf-tip i {
+            color: #ef4444;
+            margin-right: 8px;
+        }
+        .pdf-wrapper {
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #2563eb;
+            text-decoration: none;
+            margin-top: 16px;
+        }
+        .download-link:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+
+        /* figs */
+        .icon-pdf::before {
+            content: "📄";
+            font-size: 18px;
+        }
+        .icon-download::before {
+            content: "⬇️";
+            font-size: 16px;
+        }
+        .error-icon::before {
+            content: "⚠️";
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-8 md:py-12">
+        <section class="title">
+            <h1>WELCOME</h1>
+        </section>
+
+        <section class="card-section mb-12">
+            <h2 class="team-title">2026 MCM Team-2622082 (USTC)</h2>
+            <style>
+                .github-avatar {
+                    width: clamp(120px, 22vw, 240px);
+                    aspect-ratio: 1 / 1;
+                    border-radius: 50%;
+                    margin-bottom: 0.8rem;
+                    object-fit: cover;
+                }
+                a {
+                    text-decoration: none;
+                }
+            </style>
+            <div class="team-cards">
+                <a href="https://github.com/lyingloong" target="_blank">
+                <div class="team-card">
+                    <p><img src="https://github.com/lyingloong.png?size=200" alt="Hao Wang" class="github-avatar"></p>
+                    <p class="name">Hao Wang</p>
+                    <p>USTC</p>
+                </div>
+                </a>
+                <a href="https://github.com/stdlibstring" target="_blank">
+                <div class="team-card">
+                    <p><img src="https://github.com/stdlibstring.png?size=160" alt="Renhao Li" class="github-avatar"></p>
+                    <p class="name">Renhao Li</p>
+                    <p>USTC</p>
+                </div>
+                </a>
+                <a href="https://github.com/ANT181603" target="_blank">
+                <div class="team-card">
+                    <p><img src="https://github.com/ANT181603.png?size=40" alt="Wenchao Yu" class="github-avatar"></p>
+                    <p class="name">Wenchao Yu</p>
+                    <p>USTC</p>
+                </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- paper -->
+        <section class="card-section">
+            <h2 class="section-title">Our Paper</h2>
+            <div class="pdf-tip">
+            </div>
+            <!-- PDF -->
+            <div class="pdf-container pdf-wrapper">
+                <embed 
+                    src="paper2622082.pdf" 
+                    type="application/pdf"
+                    width="100%"
+                    height="100%"
+                >
+            </div>
+            <!-- download -->
+            <span class="icon-pdf"></span>
+            <a href="./paper2622082.pdf" target="_blank" class="download-link">
+                Download Full PDF
+            </a>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const embed = document.querySelector('embed');
+            embed.addEventListener('error', () => {
+                embed.parentElement.innerHTML = `
+                    <div style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#6b7280;">
+                        <span class="error-icon"></span>
+                        <p style="margin-bottom:16px;">PDF loading failed, please download to view</p>
+                        <a href="${embed.src}" target="_blank" style="color:#2563eb; text-decoration:underline;">
+                            Download PDF File
+                        </a>
+                    </div>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>
