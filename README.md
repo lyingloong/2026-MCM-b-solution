@@ -7,7 +7,7 @@
 | Name | GitHub Profile |
 | --- | --- |
 | Hao Wang | [lyingloong](https://github.com/lyingloong) |
-| Renhao Li | [LiRenHao](https://github.com/LiRenHao) |
+| Renhao Li | [LiRenHao](https://github.com/stdlibstring) |
 | Wenchao Yu | [ANT181603](https://github.com/ANT181603) |
 
 ## Project Overview
