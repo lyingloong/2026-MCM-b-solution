@@ -39,7 +39,7 @@ def read_scenario_analysis(problem=2):
     results_dir = get_results_dir(problem)
     scenario_file = os.path.join(results_dir, 'scenario_analysis.txt')
     
-    with open(scenario_file, 'r') as f:
+    with open(scenario_file, 'r', encoding='utf-8') as f:
         lines = f.readlines()
         current_scenario = {}
         for line in lines:
@@ -81,7 +81,7 @@ def read_ratio_analysis(problem=2):
     results_dir = get_results_dir(problem)
     ratio_file = os.path.join(results_dir, 'ratio_analysis.txt')
     
-    with open(ratio_file, 'r') as f:
+    with open(ratio_file, 'r', encoding='utf-8') as f:
         lines = f.readlines()
         current_ratio = {}
         for line in lines:
@@ -124,7 +124,7 @@ def read_time_limit_analysis(problem=2):
     results_dir = get_results_dir(problem)
     time_limit_file = os.path.join(results_dir, 'time_limit_analysis.txt')
     
-    with open(time_limit_file, 'r') as f:
+    with open(time_limit_file, 'r', encoding='utf-8') as f:
         lines = f.readlines()
         current_scenario = {}
         for line in lines:

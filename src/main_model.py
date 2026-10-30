@@ -330,7 +330,7 @@ def save_results_to_file(problem=2):
     
     # 保存场景分析结果
     scenario_file = os.path.join(problem_dir, 'scenario_analysis.txt')
-    with open(scenario_file, 'w') as f:
+    with open(scenario_file, 'w', encoding='utf-8') as f:
         f.write(f"=== 场景分析 (Problem {problem}) ===\n")
         for scenario in [scenario1, scenario2, scenario3]:
             f.write(f"场景: {scenario['name']}\n")
@@ -345,7 +345,7 @@ def save_results_to_file(problem=2):
     
     # 保存组合场景的比例分析
     ratio_file = os.path.join(problem_dir, 'ratio_analysis.txt')
-    with open(ratio_file, 'w') as f:
+    with open(ratio_file, 'w', encoding='utf-8') as f:
         f.write(f"=== 组合场景比例分析 (Problem {problem}) ===\n")
         
         # 使用通用函数计算比例分析
@@ -360,7 +360,7 @@ def save_results_to_file(problem=2):
     
     # 保存不同时间限制下的最优组合方案
     time_limit_file = os.path.join(problem_dir, 'time_limit_analysis.txt')
-    with open(time_limit_file, 'w') as f:
+    with open(time_limit_file, 'w', encoding='utf-8') as f:
         f.write(f"=== 不同时间限制下的最优组合方案分析 (Problem {problem}) ===\n")
         
         # 计算不同时间限制下的最优方案

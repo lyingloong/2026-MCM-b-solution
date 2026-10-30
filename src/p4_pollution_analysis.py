@@ -81,10 +81,17 @@ S3（保守 / 政策不力）：μ∈[0.30,0.60]
 排放高度决定环境影响机理地面发射（对流层 / 平流层）与轨道排放（近真空）的环境效应存在本质区别，必须引入高度相关系数 η 才能合理量化。
 """
 
+import math
+from pathlib import Path
+
 import numpy as np
 import matplotlib.pyplot as plt
-import math
-from constants import TOTAL_MATERIAL
+
+from src.constants import TOTAL_MATERIAL
+
+# Figures are written to results/p4_pollution_analysis/ (git-ignored).
+OUTPUT_DIR = Path(__file__).resolve().parents[1] / 'results' / 'p4_pollution_analysis'
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # 常量定义
 G0 = 9.81  # 重力加速度
@@ -274,7 +281,7 @@ def generate_charts(data):
             cell_obj.set_text_props(ha='center', va='center')
         cell_obj.set_edgecolor('gray')
         cell_obj.set_linewidth(0.5)
-    plt.savefig('environment_impact_analysis.png', dpi=300, bbox_inches='tight')
+    plt.savefig(OUTPUT_DIR / 'environment_impact_analysis.png', dpi=300, bbox_inches='tight')
     
     # 单独将混合方案环境影响曲线（包含表格）保存为一个PNG文件
     plt.figure(figsize=(10, 6))
@@ -311,7 +318,7 @@ def generate_charts(data):
         cell_obj.set_edgecolor('gray')
         cell_obj.set_linewidth(0.5)
     plt.tight_layout()
-    plt.savefig('hybrid_scheme_impact.png', dpi=300, bbox_inches='tight')
+    plt.savefig(OUTPUT_DIR / 'hybrid_scheme_impact.png', dpi=300, bbox_inches='tight')
     
     # 2. 单独的推进剂强度敏感性分析图
     plt.figure(figsize=(12, 6))
@@ -339,7 +346,7 @@ def generate_charts(data):
     plt.grid(alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('propellant_intensity_sensitivity.png', dpi=300, bbox_inches='tight')
+    plt.savefig(OUTPUT_DIR / 'propellant_intensity_sensitivity.png', dpi=300, bbox_inches='tight')
 
 # 主函数
 def main():

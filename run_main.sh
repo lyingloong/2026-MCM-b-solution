@@ -1,18 +1,38 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
+# Reproduce every result in ./results from a clean checkout.
+#
+# Usage:
+#   bash run_main.sh
+#
+# All figures and intermediate data are written to ./results, which is
+# git-ignored on purpose: the figures committed under ./figures are the
+# versions used in the paper.
 
-echo "Running model analysis..."
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
+# Headless plotting by default: plt.show() must not block CI or SSH sessions.
+export MPLBACKEND="${MPLBACKEND:-Agg}"
+
+echo "==> Main model (Problems 1-3)"
 python -m src.main_model
 
-echo "Generating charts..."
+echo "==> Core figures"
 python -m src.plotter
 
-echo "Processing plots for Problem 3..."
-cd results/problem_3
-python extra_plot_generator_p3.py
-cd -
+echo "==> Problem 3: additional plots"
+python -m src.p3_extra_plots
 
-echo "Running sensitivity analysis..."
-python src/sensitivity_analysis_v2.py
+echo "==> Problem 2: reliability sensitivity analysis"
+python -m src.p2_sensitivity_analysis
 
-echo "Analysis completed successfully!"
-echo "Results are available in the 'results' directory."
+echo "==> Problem 4: environmental impact analysis"
+python -m src.p4_pollution_analysis
+
+echo "==> Problem 1: 3D sensitivity analysis"
+python -m src.sensitivity_analysis_v2
+
+echo
+echo "Analysis completed successfully. Results are in ./results/"

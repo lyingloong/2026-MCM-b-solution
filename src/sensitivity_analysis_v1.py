@@ -33,9 +33,10 @@ from mpl_toolkits.mplot3d import Axes3D
 import os
 import sys
 
-# 添加项目根目录到Python路径
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from constants import *
+# 添加项目根目录到Python路径，保证 `python -m src.sensitivity_analysis_v1`
+# 和直接运行脚本时都能导入 src.constants
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.constants import *
 
 
 def calculate_combined_ratio_analysis(SE_ratio, T_S, T_R, C_S, C_R, time_limit):
@@ -321,7 +322,7 @@ def run_sensitivity_analysis(problem=1):
             
             # Save cost data to txt file
             data_filename = os.path.join(results_dir, f'problem_{problem}_time_limit_{time_limit}_{param_name}_cost.txt')
-            with open(data_filename, 'w') as f:
+            with open(data_filename, 'w', encoding='utf-8') as f:
                 f.write(f'Problem: {problem}\n')
                 f.write(f'Time Limit: {time_limit} years\n')
                 f.write(f'Parameter: {param_name}\n')
@@ -340,7 +341,7 @@ def run_sensitivity_analysis(problem=1):
             
             # Save time data to txt file
             data_filename = os.path.join(results_dir, f'problem_{problem}_time_limit_{time_limit}_{param_name}_time.txt')
-            with open(data_filename, 'w') as f:
+            with open(data_filename, 'w', encoding='utf-8') as f:
                 f.write(f'Problem: {problem}\n')
                 f.write(f'Time Limit: {time_limit} years\n')
                 f.write(f'Parameter: {param_name}\n')
