@@ -2,6 +2,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
+build/
+dist/
+.pytest_cache/
 
 # Virtual Environment
 venv/
@@ -14,6 +18,13 @@ env/
 *.swp
 *.swo
 *~
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
 
 # Results
 results/
